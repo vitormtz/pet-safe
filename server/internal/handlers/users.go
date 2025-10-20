@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
 	"petsafe/internal/db"
 	"petsafe/internal/models"
@@ -56,14 +55,14 @@ func UpdateUser(c *gin.Context) {
 }
 
 // Admin / read by id (example)
-func GetUserByID(c *gin.Context) {
-	idStr := c.Param("id")
-	id, _ := strconv.ParseUint(idStr, 10, 64)
-	var user models.User
-	if err := db.DB.First(&user, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
-		return
-	}
-	user.PasswordHash = ""
-	c.JSON(http.StatusOK, gin.H{"data": user})
-}
+// func GetUserByID(c *gin.Context) {
+// 	idStr := c.Param("id")
+// 	id, _ := strconv.ParseUint(idStr, 10, 64)
+// 	var user models.User
+// 	if err := db.DB.First(&user, id).Error; err != nil {
+// 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+// 		return
+// 	}
+// 	user.PasswordHash = ""
+// 	c.JSON(http.StatusOK, gin.H{"data": user})
+// }

@@ -56,6 +56,7 @@ CREATE TABLE public.devices (
     last_latitude NUMERIC(9, 6),
     last_longitude NUMERIC(9, 6),
     battery_percent REAL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT fk_devices_owner FOREIGN KEY (owner_id)
         REFERENCES public.users (id)
         ON UPDATE CASCADE
@@ -68,7 +69,7 @@ CREATE TABLE public.devices (
 
 
 -- ===============================
--- Tabela de Dispositivos
+-- Tabela de Histórico da Bateria de Dispositivos
 -- ===============================
 CREATE TABLE public.battery_history (
     id BIGSERIAL PRIMARY KEY,

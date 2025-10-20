@@ -39,7 +39,7 @@ func main() {
 			secured.GET("/me", handlers.GetMe)
 			secured.PATCH("/me", handlers.UpdateUser)
 
-			secured.GET("/users/:id", handlers.GetUserByID) // cuidado: permitir só admin
+			// secured.GET("/users/:id", handlers.GetUserByID) // cuidado: permitir só admin
 			// TODO:
 			// PATCH /users/{id} → atualizar nome, telefone etc.
 			// DELETE /users/{id} → excluir usuário
@@ -47,17 +47,20 @@ func main() {
 			// pets
 			secured.POST("/pets", handlers.CreatePet)
 			secured.GET("/pets", handlers.ListPets)
-			// TODO:
-			// PATCH /pets/{id} → atualizar informações do pet
-			// DELETE /pets/{id} → excluir
+			secured.GET("/pets/:id", handlers.DetailsPet)
+			secured.PATCH("/pets/:id", handlers.UpdatePet)
+			secured.DELETE("/pets/:id", handlers.DeletePet)
 
 			// devices
 			secured.POST("/devices", handlers.CreateDevice)
-			// PATCH /devices/{id} → atualizar dados (pet vinculado, firmware, ativo/inativo)
-			// DELETE /devices/{id} → remover dispositivo
+			secured.GET("/devices", handlers.ListDevices)
+			secured.PATCH("/devices/:id", handlers.UpdateDevice)
+			secured.DELETE("/devices/:id", handlers.DeleteDevice)
+
+			// device data
 			secured.GET("/devices/:id/status", handlers.DeviceStatus)
+			secured.GET("/devices/:id/locations/:limit", handlers.ListDeviceLocations)
 			// GET /devices/{id}/battery-history → histórico de bateria
-			// GET /devices/{id}/locations → rota do dispositivo (últimos N pontos)
 
 		}
 	}

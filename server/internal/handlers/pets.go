@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"time"
 
 	"petsafe/internal/db"
 	"petsafe/internal/models"
@@ -45,4 +46,62 @@ func ListPets(c *gin.Context) {
 	var pets []models.Pet
 	db.DB.Where("owner_id = ?", ownerID).Find(&pets)
 	c.JSON(http.StatusOK, gin.H{"data": pets})
+}
+
+func DetailsPet(c *gin.Context) {
+	pet_id := c.Param("id")
+	uidAny, _ := c.Get("user_id")
+	ownerID := uidAny.(uint64)
+	var p models.Pet
+	if err := db.DB.Where("owner_id = ?", ownerID).First(&p, pet_id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "pet not found"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": p})
+}
+
+type UpdatePetInput struct {
+	Name        string     `json:"name"`
+	Species     string     `json:"species"`
+	Breed       string     `json:"breed"`
+	DOB         *time.Time `json:"dob"`
+	MicrochipID string     `json:"microchip_id"`
+}
+
+func UpdatePet(c *gin.Context) {
+	uidAny, _ := c.Get("user_id")
+	ownerID := uidAny.(uint64)
+
+	// Get model if exist
+	var pet models.Pet
+	if err := db.DB.Where("id = ?", c.Param("id")).Where("owner_id = ?", ownerID).First(&pet).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Pet not found!"})
+		return
+	}
+
+	// Validate input
+	var input UpdatePetInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	db.DB.Model(&pet).Updates(input)
+
+	c.JSON(http.StatusOK, gin.H{"data": pet})
+}
+
+func DeletePet(c *gin.Context) {
+	uidAny, _ := c.Get("user_id")
+	ownerID := uidAny.(uint64)
+	// Get model if exist
+	var pet models.Pet
+	if err := db.DB.Where("id = ?", c.Param("id")).Where("owner_id = ?", ownerID).First(&pet).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Pet not found!"})
+		return
+	}
+
+	db.DB.Delete(&pet)
+
+	c.JSON(http.StatusOK, gin.H{"data": true})
 }

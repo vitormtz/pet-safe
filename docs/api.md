@@ -10,7 +10,7 @@ POST /locations → dispositivo envia sua localização
 	"accuracy": "" 
 	"speed": "" 
 	"heading": "" 
-	"updated_at": "" required
+	"updated_at": "" required "epoch ms"
 ```
 
 ## 🔑 Autenticação e Sessão
@@ -73,11 +73,18 @@ POST /pets → criar pet (vinculado ao usuário autenticado)
 ```
 GET /pets → listar pets do usuário
 
-<!-- GET /pets/{id} → detalhes de um pet
+
+GET /pets/{id} → detalhes de um pet
 
 PATCH /pets/{id} → atualizar informações do pet
-
-DELETE /pets/{id} → excluir -->
+``` json
+	"name":""
+	"species":""
+	"breed":""
+	"microchip_id":""
+	"dob":""
+```
+DELETE /pets/{id} → excluir pet
 
 ## 📱 Dispositivos
 
@@ -88,21 +95,21 @@ POST /devices → registrar dispositivo (serial, imei, etc.)
 	"model": ""
 	"firmware": ""
 ```
-<!-- GET /devices → listar dispositivos do usuário -->
+GET /devices → listar dispositivos do usuário
 
-<!-- GET /devices/{id} → detalhes -->
+GET /devices/{id} → detalhes
 
-<!-- PATCH /devices/{id} → atualizar dados (pet vinculado, firmware, ativo/inativo) -->
-<!-- DELETE /devices/{id} → remover dispositivo -->
+PATCH /devices/{id} → atualizar dados (pet vinculado, firmware, ativo/inativo)
+
+DELETE /devices/{id} → remover dispositivo
 
 ### Dados dinâmicos de dispositivos:
 
 GET /devices/{id}/status → último status (bateria, última localização, conectividade)
 
-<!-- GET /devices/{id}/battery-history → histórico de bateria
+GET /devices/{id}/locations/{n limit} → rota do dispositivo (últimos N pontos)
 
-GET /devices/{id}/locations → rota do dispositivo (últimos N pontos) -->
-
+<!-- GET /devices/{id}/battery-history → histórico de bateria -->
 
 <!-- 
 ## 🛰️ Geofences
