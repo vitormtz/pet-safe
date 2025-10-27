@@ -1,16 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.example.petsafeweb;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 /**
+ * Aplicação principal PetSafe Web
+ * Sistema de monitoramento e rastreamento de pets em tempo real
  *
  * @author vitor
  */
+@SpringBootApplication
 public class PetSafeWeb {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        SpringApplication.run(PetSafeWeb.class, args);
     }
 }
