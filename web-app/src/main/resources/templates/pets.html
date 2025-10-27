@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PetSafe - Gerenciar Pets">
+    <title>Meus Pets - PetSafe</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" th:href="@{/images/icone_01.ico}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/pets.css}">
+</head>
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <!-- Main Content -->
+    <div class="container py-5" style="margin-top: 80px;">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="fw-bold mb-2">Meus Pets</h1>
+                        <p class="text-muted mb-0">Gerencie os pets cadastrados no sistema</p>
+                    </div>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#petModal" onclick="openAddModal()">
+                        <i class="bi bi-plus-circle me-2"></i>Adicionar Pet
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Pets Grid -->
+        <div class="row g-4" th:if="${pets != null and !pets.isEmpty()}">
+            <div class="col-md-6 col-lg-4" th:each="pet : ${pets}">
+                <div class="card pet-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="pet-icon">
+                                <i class="bi bi-heart-fill" th:classappend="${pet.species == 'Cachorro' || pet.species == 'Dog' ? 'text-primary' : (pet.species == 'Gato' || pet.species == 'Cat' ? 'text-warning' : 'text-info')}" style="margin-top: 6px;"></i>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item edit-pet-btn" href="#"
+                                           th:data-pet-id="${pet.id}"
+                                           th:data-pet-name="${pet.name}"
+                                           th:data-pet-species="${pet.species}"
+                                           th:data-pet-breed="${pet.breed}"
+                                           th:data-pet-microchip="${pet.microchipId}"
+                                           th:data-pet-dob="${pet.dob}">
+                                            <i class="bi bi-pencil me-2"></i>Editar
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-danger delete-pet-btn" href="#"
+                                           th:data-pet-id="${pet.id}"
+                                           th:data-pet-name="${pet.name}">
+                                            <i class="bi bi-trash me-2"></i>Excluir
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h5 class="card-title fw-bold mb-2" th:text="${pet.name}">Nome do Pet</h5>
+
+                        <div class="pet-info">
+                            <div class="info-item">
+                                <i class="bi bi-tag-fill text-primary"></i>
+                                <span>
+                                    <strong>Espécie:</strong>
+                                    <span th:text="${pet.species}">Espécie</span>
+                                </span>
+                            </div>
+                            <div class="info-item" th:if="${pet.breed != null and !pet.breed.isEmpty()}">
+                                <i class="bi bi-award-fill text-success"></i>
+                                <span>
+                                    <strong>Raça:</strong>
+                                    <span th:text="${pet.breed}">Raça</span>
+                                </span>
+                            </div>
+                            <div class="info-item" th:if="${pet.microchipId != null and !pet.microchipId.isEmpty()}">
+                                <i class="bi bi-cpu-fill text-info"></i>
+                                <span>
+                                    <strong>Microchip:</strong>
+                                    <span th:text="${pet.microchipId}">ID</span>
+                                </span>
+                            </div>
+                            <div class="info-item" th:if="${pet.dob != null and !pet.dob.isEmpty()}">
+                                <i class="bi bi-calendar-fill text-warning"></i>
+                                <span>
+                                    <strong>Nascimento:</strong>
+                                    <span th:text="${#strings.substring(pet.dob, 0, 10)}">Data</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="text-center py-5" th:if="${pets == null or pets.isEmpty()}">
+            <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+            <h3 class="text-muted">Nenhum pet cadastrado</h3>
+            <p class="text-muted mb-0">Adicione seu primeiro pet para começar a monitorá-lo</p>
+        </div>
+    </div>
+
+    <!-- Pet Modal (Add/Edit) -->
+    <div class="modal fade" id="petModal" tabindex="-1" aria-labelledby="petModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="petModalLabel">Adicionar Pet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="petForm" th:action="@{/pets}" method="post" th:object="${petRequest}">
+                    <input type="hidden" id="petId" name="petId">
+                    <div class="modal-body">
+                        <!-- Nome -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nome do Pet *</label>
+                            <input type="text" class="form-control" id="name" name="name" th:field="*{name}" required>
+                        </div>
+
+                        <!-- Espécie -->
+                        <div class="mb-3">
+                            <label for="species" class="form-label">Espécie *</label>
+                            <select class="form-select" id="species" name="species" th:field="*{species}" required>
+                                <option value="">Selecione...</option>
+                                <option value="Cachorro">Cachorro</option>
+                                <option value="Gato">Gato</option>
+                                <option value="Pássaro">Pássaro</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+
+                        <!-- Raça -->
+                        <div class="mb-3">
+                            <label for="breed" class="form-label">Raça</label>
+                            <input type="text" class="form-control" id="breed" name="breed" th:field="*{breed}">
+                        </div>
+
+                        <!-- Microchip ID -->
+                        <div class="mb-3">
+                            <label for="microchipId" class="form-label">ID do Microchip</label>
+                            <input type="text" class="form-control" id="microchipId" name="microchipId" th:field="*{microchipId}">
+                        </div>
+
+                        <!-- Data de Nascimento -->
+                        <div class="mb-3">
+                            <label for="dob" class="form-label">Data de Nascimento</label>
+                            <input type="date" class="form-control" id="dob" name="dob" th:field="*{dob}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar Exclusão
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja excluir o pet <strong id="deletePetName"></strong>?</p>
+                    <p class="text-muted mb-0">Esta ação não pode ser desfeita.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="deleteForm" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash me-2"></i>Excluir
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script>
+        // Função para abrir modal de adicionar
+        function openAddModal() {
+            document.getElementById('petModalLabel').innerText = 'Adicionar Pet';
+            document.getElementById('petForm').action = '/pets';
+            document.getElementById('petId').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('species').value = '';
+            document.getElementById('breed').value = '';
+            document.getElementById('microchipId').value = '';
+            document.getElementById('dob').value = '';
+            document.getElementById('submitBtn').innerText = 'Salvar';
+        }
+
+        // Event listeners para botões de editar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Editar pet
+            document.querySelectorAll('.edit-pet-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const id = this.getAttribute('data-pet-id');
+                    const name = this.getAttribute('data-pet-name');
+                    const species = this.getAttribute('data-pet-species');
+                    const breed = this.getAttribute('data-pet-breed') || '';
+                    const microchipId = this.getAttribute('data-pet-microchip') || '';
+                    let dob = this.getAttribute('data-pet-dob') || '';
+
+                    // Converter data do formato ISO 8601 para yyyy-MM-dd (formato esperado pelo input date)
+                    if (dob && dob.includes('T')) {
+                        dob = dob.split('T')[0];
+                    }
+
+                    document.getElementById('petModalLabel').innerText = 'Editar Pet';
+                    document.getElementById('petForm').action = '/pets/' + id + '/update';
+                    document.getElementById('petId').value = id;
+                    document.getElementById('name').value = name;
+                    document.getElementById('species').value = species;
+                    document.getElementById('breed').value = breed;
+                    document.getElementById('microchipId').value = microchipId;
+                    document.getElementById('dob').value = dob;
+                    document.getElementById('submitBtn').innerText = 'Atualizar';
+
+                    const modal = new bootstrap.Modal(document.getElementById('petModal'));
+                    modal.show();
+                });
+            });
+
+            // Excluir pet
+            document.querySelectorAll('.delete-pet-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const id = this.getAttribute('data-pet-id');
+                    const name = this.getAttribute('data-pet-name');
+
+                    document.getElementById('deletePetName').innerText = name;
+                    document.getElementById('deleteForm').action = '/pets/' + id + '/delete';
+
+                    const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                    modal.show();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

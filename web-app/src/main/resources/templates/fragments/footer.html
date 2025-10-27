@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Footer Fragment -->
+    <footer th:fragment="footer" class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <div class="d-flex align-items-center mb-3">
+                        <img th:src="@{/images/logo_01.png}" alt="PetSafe Logo" height="40" class="me-2">
+                        <span class="fw-bold fs-4">PetSafe</span>
+                    </div>
+                    <p class="text-white-50">
+                        Tecnologia de ponta para a segurança e tranquilidade do seu pet.
+                    </p>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="mb-3">Suporte</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Central de Ajuda</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">FAQ</a></li>
+                        <li class="mb-2"><a href="/#contact" class="text-white-50 text-decoration-none">Contato</a></li>
+                        <li class="mb-2"><a href="#" class="text-white-50 text-decoration-none">Política de Privacidade</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5 class="mb-3">Newsletter</h5>
+                    <p class="text-white-50 mb-3">Receba novidades e dicas sobre segurança pet</p>
+                    <form class="d-flex gap-2">
+                        <input type="email" class="form-control" placeholder="Seu e-mail">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-send-fill"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <hr class="my-4 bg-white-50">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0 text-white-50">
+                        &copy; 2025 PetSafe. Todos os direitos reservados.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="text-white-50 text-decoration-none me-3">
+                        <i class="bi bi-facebook fs-5"></i>
+                    </a>
+                    <a href="#" class="text-white-50 text-decoration-none me-3">
+                        <i class="bi bi-instagram fs-5"></i>
+                    </a>
+                    <a href="#" class="text-white-50 text-decoration-none me-3">
+                        <i class="bi bi-twitter fs-5"></i>
+                    </a>
+                    <a href="#" class="text-white-50 text-decoration-none">
+                        <i class="bi bi-linkedin fs-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

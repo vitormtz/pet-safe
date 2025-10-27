@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PetSafe - Login">
+    <title>Login - PetSafe</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" th:href="@{/images/icone_01.ico}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body class="auth-page">
+    <!-- Navbar -->
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container-fluid">
+        <div class="row min-vh-100">
+            <!-- Left Side - Form -->
+            <div class="col-lg-6 d-flex align-items-center justify-content-center p-5">
+                <div class="auth-form-container">
+                    <!-- Header -->
+                    <div class="text-center mb-4">
+                        <h2 class="fw-bold mb-2">Bem-vindo de Volta!</h2>
+                        <p class="text-muted">Faça login para acessar sua conta</p>
+                    </div>
+
+                    <!-- Alert Messages -->
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span th:text="${success}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="loginForm" th:action="@{/login}" method="post" th:object="${loginRequest}" novalidate>
+                        <!-- Email Field -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-envelope-fill"></i>
+                                </span>
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       name="email"
+                                       th:field="*{email}"
+                                       th:value="${email}"
+                                       placeholder="seu@email.com"
+                                       required>
+                                <div class="invalid-feedback">
+                                    Por favor, insira um e-mail válido
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Senha</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-lock-fill"></i>
+                                </span>
+                                <input type="password"
+                                       class="form-control"
+                                       id="password"
+                                       name="password"
+                                       th:field="*{password}"
+                                       placeholder="••••••••"
+                                       required
+                                       minlength="8">
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword"
+                                        aria-label="Mostrar/Ocultar senha">
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    Por favor, insira uma senha válida
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Forgot Password -->
+                        <div class="text-end mb-4">
+                            <a href="#" class="text-primary text-decoration-none small">Esqueceu a senha?</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary btn-lg" id="loginButton">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Register Link -->
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">
+                            Não tem uma conta?
+                            <a href="/register" class="text-primary fw-semibold text-decoration-none">Cadastre-se</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side - Image/Info -->
+            <div class="col-lg-6 auth-side-panel d-none d-lg-flex">
+                <div class="auth-side-content">
+                    <div class="text-center mb-5">
+                        <i class="bi bi-shield-fill-check display-1 text-white mb-4"></i>
+                        <h2 class="text-white fw-bold mb-3">PetSafe</h2>
+                        <p class="text-white-50 fs-5">
+                            Seu pet sempre seguro e protegido
+                        </p>
+                    </div>
+
+                    <div class="row g-4 text-white">
+                        <div class="col-12">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
+                                <div>
+                                    <h5 class="mb-2">Rastreamento GPS</h5>
+                                    <p class="text-white-50 mb-0">
+                                        Localização precisa em tempo real
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
+                                <div>
+                                    <h5 class="mb-2">Alertas Inteligentes</h5>
+                                    <p class="text-white-50 mb-0">
+                                        Notificações instantâneas de eventos
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
+                                <div>
+                                    <h5 class="mb-2">Segurança Total</h5>
+                                    <p class="text-white-50 mb-0">
+                                        Seus dados protegidos com criptografia
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Login Page Scripts -->
+    <script th:inline="javascript">
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('togglePasswordIcon');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            }
+        });
+
+        // Form validation
+        const loginForm = document.getElementById('loginForm');
+        const loginButton = document.getElementById('loginButton');
+
+        loginForm.addEventListener('submit', function (event) {
+            if (!loginForm.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            } else {
+                // Show loading state
+                loginButton.classList.add('loading');
+                loginButton.disabled = true;
+            }
+
+            loginForm.classList.add('was-validated');
+        });
+
+        // Email validation
+        const emailField = document.getElementById('email');
+        emailField.addEventListener('blur', function () {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailField.value && !emailRegex.test(emailField.value)) {
+                emailField.setCustomValidity('Por favor, insira um e-mail válido');
+            } else {
+                emailField.setCustomValidity('');
+            }
+        });
+
+        // Clear validation on input
+        emailField.addEventListener('input', function () {
+            emailField.setCustomValidity('');
+        });
+
+        const passwordField = document.getElementById('password');
+        passwordField.addEventListener('input', function () {
+            passwordField.setCustomValidity('');
+        });
+    </script>
+</body>
+</html>

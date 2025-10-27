@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PetSafe - Sistema de monitoramento e rastreamento de pets em tempo real">
+    <title>PetSafe - Segurança e Tranquilidade para seu Pet</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" th:href="@{/images/icone_01.ico}">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        .btn-custom-secondary {
+            background-color: #e9ecef;
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+        .btn-custom-secondary:hover {
+            background-color: #ced4da;
+            border-color: #495057;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6 py-5">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Segurança e Tranquilidade para seu Pet
+                    </h1>
+                    <p class="lead mb-4">
+                        Monitore seu animal de estimação em tempo real com nossa coleira inteligente.
+                        Rastreamento GPS, alertas automáticos e muito mais.
+                    </p>
+                    <div class="d-flex gap-3 mb-4">
+                        <a href="#" class="btn btn-primary btn-lg">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Começar Agora
+                        </a>
+                        <a href="#how-it-works" class="btn btn-custom-secondary btn-lg">
+                            <i class="bi bi-play-circle me-2"></i>Saiba Mais
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 py-5">
+                    <div class="hero-image-container">
+                        <div class="floating-card">
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+                            <div>
+                                <small class="d-block text-muted">Localização Atual</small>
+                                <strong>Em Casa</strong>
+                            </div>
+                        </div>
+                        <div class="hero-illustration">
+                            <i class="bi bi-phone display-1 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold mb-3">Recursos Principais</h2>
+                <p class="text-muted">Tecnologia de ponta para a segurança do seu pet</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-primary bg-opacity-10">
+                            <i class="bi bi-geo-alt-fill text-primary"></i>
+                        </div>
+                        <h4 class="mb-3">Rastreamento em Tempo Real</h4>
+                        <p class="text-muted">
+                            Acompanhe a localização do seu pet em um mapa interativo com
+                            atualização em tempo real via GPS/GLONASS.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-success bg-opacity-10">
+                            <i class="bi bi-shield-fill-check text-success"></i>
+                        </div>
+                        <h4 class="mb-3">Zonas Seguras</h4>
+                        <p class="text-muted">
+                            Defina áreas seguras e receba alertas instantâneos quando seu
+                            pet sair ou entrar nessas regiões.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-warning bg-opacity-10">
+                            <i class="bi bi-bell-fill text-warning"></i>
+                        </div>
+                        <h4 class="mb-3">Alertas Inteligentes</h4>
+                        <p class="text-muted">
+                            Notificações por app, e-mail ou SMS para eventos como fuga,
+                            bateria baixa ou remoção da coleira.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-info bg-opacity-10">
+                            <i class="bi bi-clock-history text-info"></i>
+                        </div>
+                        <h4 class="mb-3">Histórico de Rotas</h4>
+                        <p class="text-muted">
+                            Visualize o histórico completo de movimentação do seu pet
+                            com relatórios detalhados.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon bg-danger bg-opacity-10">
+                            <i class="bi bi-battery-charging text-danger"></i>
+                        </div>
+                        <h4 class="mb-3">Monitoramento de Bateria</h4>
+                        <p class="text-muted">
+                            Acompanhe o nível de bateria da coleira e receba alertas
+                            para recarregar no momento certo.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon" style="background-color: #e4d5ff;">
+                            <i class="bi bi-phone text-purple"></i>
+                        </div>
+                        <h4 class="mb-3">Múltiplos Dispositivos</h4>
+                        <p class="text-muted">
+                            Gerencie vários pets e dispositivos em uma única conta
+                            de forma simples e organizada.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold mb-3">Como Funciona</h2>
+                <p class="text-muted">Simples, rápido e seguro</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="step-number">1</div>
+                        <h4 class="mb-3">Adquira a Coleira</h4>
+                        <p class="text-muted">
+                            Escolha o plano ideal e receba sua coleira inteligente
+                            PetSafe em casa.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="step-number">2</div>
+                        <h4 class="mb-3">Configure o Dispositivo</h4>
+                        <p class="text-muted">
+                            Cadastre seu pet e vincule a coleira ao aplicativo
+                            de forma rápida e fácil.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="step-number">3</div>
+                        <h4 class="mb-3">Monitore em Tempo Real</h4>
+                        <p class="text-muted">
+                            Acompanhe seu pet 24/7 pelo celular, tablet ou computador
+                            de qualquer lugar.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-4 mb-lg-0">
+                    <h2 class="fw-bold mb-4">Entre em Contato</h2>
+                    <p class="text-muted mb-4">
+                        Tem dúvidas? Nossa equipe está pronta para ajudar você a
+                        proteger seu pet.
+                    </p>
+                    <div class="mb-3">
+                        <i class="bi bi-envelope-fill text-primary me-2"></i>
+                        <a href="mailto:contato@petsafe.com" class="text-decoration-none">contato@petsafe.com</a>
+                    </div>
+                    <div class="mb-3">
+                        <i class="bi bi-telephone-fill text-primary me-2"></i>
+                        <a href="tel:+5511999999999" class="text-decoration-none">(11) 99999-9999</a>
+                    </div>
+                    <div class="mb-3">
+                        <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                        <span>São Paulo, SP - Brasil</span>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+                            <form id="contactForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Nome Completo</label>
+                                    <input type="text" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">E-mail</label>
+                                    <input type="email" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Telefone</label>
+                                    <input type="tel" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Mensagem</label>
+                                    <textarea class="form-control" rows="4" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    Enviar Mensagem
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script th:src="@{/js/script.js}"></script>
+</body>
+</html>
