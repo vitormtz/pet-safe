@@ -11,11 +11,11 @@ import (
 )
 
 type CreatePetInput struct {
-	Name        string  `json:"name" binding:"required"`
-	Species     string  `json:"species"`
-	Breed       string  `json:"breed"`
-	MicrochipID string  `json:"microchip_id"`
-	DOB         *string `json:"dob"` // ISO date optional
+	Name        string     `json:"name" binding:"required"`
+	Species     string     `json:"species"`
+	Breed       string     `json:"breed"`
+	MicrochipID string     `json:"microchip_id"`
+	DOB         *time.Time `json:"dob"` // ISO date optional
 }
 
 func CreatePet(c *gin.Context) {
@@ -32,6 +32,7 @@ func CreatePet(c *gin.Context) {
 		Species:     in.Species,
 		Breed:       in.Breed,
 		MicrochipID: in.MicrochipID,
+		DOB:         in.DOB,
 	}
 	if err := db.DB.Create(&pet).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create pet"})
