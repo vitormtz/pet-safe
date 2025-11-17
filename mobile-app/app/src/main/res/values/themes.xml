@@ -6,4 +6,11 @@
     </style>
 
     <style name="Theme.PetSafe" parent="Base.Theme.PetSafe" />
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.PetSafe.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.PetSafe</item>
+    </style>
 </resources>
