@@ -77,6 +77,13 @@ public class SessionManager {
     }
 
     /**
+     * Retorna os dados do usuário logado (alias para getUser)
+     */
+    public User getUserDetails() {
+        return getUser();
+    }
+
+    /**
      * Atualiza o access token
      */
     public void updateAccessToken(String accessToken) {
