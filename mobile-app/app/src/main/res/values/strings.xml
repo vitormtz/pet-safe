@@ -1,3 +1,43 @@
 <resources>
     <string name="app_name">Pet Safe</string>
+
+    <!-- Welcome Screen -->
+    <string name="welcome_title">PetSafe</string>
+    <string name="welcome_subtitle">Segurança e Tranquilidade para você e seu pet</string>
+    <string name="welcome_description">Monitore seu pet em tempo real, receba alertas e tenha total controle através da nossa plataforma.</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Bem-vindo de volta!</string>
+    <string name="email_hint">E-mail</string>
+    <string name="password_hint">Senha</string>
+    <string name="login_button">Entrar</string>
+    <string name="forgot_password">Esqueceu a senha?</string>
+    <string name="no_account">Não tem uma conta?</string>
+    <string name="register_link">Cadastre-se</string>
+    <string name="or_divider">ou</string>
+
+    <!-- Register Screen -->
+    <string name="register_title">Criar Conta</string>
+    <string name="register_subtitle">Cadastre-se para começar</string>
+    <string name="full_name_hint">Nome Completo</string>
+    <string name="phone_hint">Telefone (opcional)</string>
+    <string name="confirm_password_hint">Confirmar Senha</string>
+    <string name="register_button">Cadastrar</string>
+    <string name="already_have_account">Já tem uma conta?</string>
+    <string name="login_link">Faça login</string>
+
+    <!-- Error Messages -->
+    <string name="error_empty_email">Por favor, insira seu e-mail</string>
+    <string name="error_invalid_email">E-mail inválido</string>
+    <string name="error_empty_password">Por favor, insira sua senha</string>
+    <string name="error_password_too_short">A senha deve ter no mínimo 8 caracteres</string>
+    <string name="error_password_mismatch">As senhas não coincidem</string>
+    <string name="error_empty_name">Por favor, insira seu nome completo</string>
+    <string name="error_login_failed">Falha no login. Verifique suas credenciais.</string>
+    <string name="error_register_failed">Falha no cadastro. Tente novamente.</string>
+    <string name="error_email_exists">Este e-mail já está cadastrado</string>
+    <string name="error_network">Erro de conexão. Verifique sua internet.</string>
+
+    <!-- Success Messages -->
+    <string name="success_register">Cadastro realizado com sucesso!</string>
 </resources>
