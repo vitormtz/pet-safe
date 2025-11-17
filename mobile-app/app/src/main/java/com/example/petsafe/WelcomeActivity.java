@@ -170,11 +170,6 @@ public class WelcomeActivity extends AppCompatActivity {
                             loginResponse.getUser()
                     );
 
-                    // Mostrar mensagem de sucesso
-                    Toast.makeText(WelcomeActivity.this,
-                            "Bem-vindo, " + loginResponse.getUser().getFullName() + "!",
-                            Toast.LENGTH_SHORT).show();
-
                     // Navegar para MainActivity
                     navigateToMain();
                 } else {
