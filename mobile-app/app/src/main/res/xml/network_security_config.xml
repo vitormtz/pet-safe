@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Configuração para desenvolvimento - permite HTTP em todos os domínios -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Domínios permitidos para tráfego HTTP -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain> <!-- Emulador -->
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">192.168.1.100</domain> <!-- IP local (exemplo) -->
+        <domain includeSubdomains="true">177.44.248.27</domain> <!-- VM da faculdade - PetSafe -->
+    </domain-config>
+</network-security-config>
