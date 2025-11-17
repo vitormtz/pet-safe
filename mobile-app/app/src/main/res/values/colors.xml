@@ -2,4 +2,47 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- PetSafe Color Palette - Baseada na Logo -->
+    <!-- Tons de Azul/Turquesa da Logo -->
+    <color name="primary">#5BA3A8</color> <!-- Azul-turquesa médio da logo -->
+    <color name="primary_dark">#2C5E68</color> <!-- Azul escuro da borda/contorno -->
+    <color name="primary_light">#9AD5D9</color> <!-- Ciano claro da logo -->
+    <color name="primary_lighter">#B8E5E8</color> <!-- Ciano muito claro -->
+
+    <!-- Accent Colors -->
+    <color name="accent">#5BA3A8</color> <!-- Mesma cor primária para consistência -->
+    <color name="accent_light">#7BBAC0</color> <!-- Versão mais clara do accent -->
+    <color name="accent_dark">#4A8287</color> <!-- Versão mais escura do accent -->
+
+    <!-- Background Colors -->
+    <color name="background">#F0F8F8</color> <!-- Fundo levemente azulado -->
+    <color name="background_secondary">#E8F4F5</color> <!-- Fundo alternativo -->
+    <color name="surface">#FFFFFF</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary">#2C5E68</color> <!-- Azul escuro da logo -->
+    <color name="text_secondary">#5BA3A8</color> <!-- Azul médio -->
+    <color name="text_hint">#9AD5D9</color> <!-- Ciano claro -->
+    <color name="text_on_primary">#FFFFFF</color> <!-- Texto sobre cor primária -->
+
+    <!-- Status Colors -->
+    <color name="success">#5BA3A8</color> <!-- Usando a cor primária -->
+    <color name="error">#E57373</color> <!-- Vermelho suave -->
+    <color name="warning">#FFB74D</color> <!-- Laranja suave -->
+    <color name="info">#64B5F6</color> <!-- Azul informativo -->
+
+    <!-- UI Elements -->
+    <color name="divider">#B8E5E8</color> <!-- Divisor com tom da logo -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_stroke">#9AD5D9</color> <!-- Borda de cards -->
+    <color name="input_background">#F0F8F8</color> <!-- Fundo de inputs -->
+    <color name="input_stroke">#5BA3A8</color> <!-- Borda de inputs -->
+
+    <!-- Gradient Colors (para efeitos especiais) -->
+    <color name="gradient_start">#B8E5E8</color> <!-- Ciano claro -->
+    <color name="gradient_end">#5BA3A8</color> <!-- Turquesa -->
+
+    <!-- Splash Screen -->
+    <color name="splash_background">#8EE2E4</color> <!-- Cor de fundo da splash screen -->
 </resources>
