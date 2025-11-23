@@ -196,4 +196,26 @@ public class DeviceController {
             return "redirect:/devices";
         }
     }
+
+    /**
+     * Retorna a lista de localizações recentes em formato JSON para atualização do
+     * mapa.
+     */
+    @GetMapping("/{id}/locations/json")
+    @ResponseBody // Indica que o retorno é o corpo da resposta HTTP (JSON) e não o nome de um
+                  // template
+    public List<LocationResponse> getDeviceLocationsJson(
+            @PathVariable("id") Long id,
+            @RequestParam(name = "limit", defaultValue = "50") int limit,
+            HttpSession session) throws Exception {
+
+        String accessToken = (String) session.getAttribute("accessToken");
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw new Exception("Sessão expirada ou não autenticada.");
+        }
+
+        // Reusa o método do service. O limite é 50 por padrão ou o que for passado como
+        // parâmetro.
+        return deviceService.listDeviceLocations(id, limit, accessToken);
+    }
 }

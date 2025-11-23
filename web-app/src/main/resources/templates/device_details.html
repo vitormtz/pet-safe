@@ -130,8 +130,10 @@
                             <i class="bi bi-database-fill detail-icon me-3"></i>
                             <div>
                                 <small class="text-muted">Localizações Carregadas</small>
-                                <p class="mb-0 fw-bold" th:text="${locations.size()} + ' de ' + ${locationLimit}">50 de
-                                    50</p>
+                                <p class="mb-0 fw-bold">
+                                    <span id="locationCount"
+                                        th:text="${locations.size()} + ' de ' + ${locationLimit}">50 de 50</span>
+                                </p>
                             </div>
                         </div>
 
@@ -157,43 +159,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // Pega a lista de localizações do Spring Model
-        const locations = [[${ locations }]];
+        // Variáveis globais para o mapa e dados
+        let map;
+        let polylineLayer;
+        let markersLayer = L.layerGroup();
+        const DEVICE_ID = [[${ device.id }]];
+        const LOCATION_LIMIT = [[${ locationLimit }]];
+        const REFRESH_INTERVAL_MS = 5000; // 5 segundos
 
-        // Centro do mapa (Última localização ou padrão)
         const DEFAULT_LAT = -23.5505; // Centro de São Paulo
         const DEFAULT_LNG = -46.6333;
 
-        let mapCenter = [DEFAULT_LAT, DEFAULT_LNG];
-        let zoomLevel = 10;
-        let lastLocationMarker = null;
-
-        if (locations && locations.length > 0) {
-            // Usa a localização mais recente (primeira da lista) como centro
-            const latestLocation = locations[0];
-            mapCenter = [latestLocation.latitude, latestLocation.longitude];
-            zoomLevel = 15;
-        }
-
-        // Inicializa o mapa
-        const map = L.map('map', {
-            center: mapCenter,
-            zoom: zoomLevel,
-            zoomControl: false // Desabilita o zoom padrão
-        });
-
-        // Adiciona a camada de tiles do OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // Adiciona controle de zoom e escala
-        L.control.zoom({ position: 'topright' }).addTo(map);
-        L.control.scale({ imperial: false }).addTo(map);
-
-        // Define os ícones personalizados
+        // Ícones Leaflet (o CSS deve estar no <style>)
         const latestIcon = L.divIcon({
             className: 'custom-latest-marker',
             html: '<i class="bi bi-pin-map-fill text-danger" style="font-size: 24px;"></i>',
@@ -209,69 +190,145 @@
             iconAnchor: [4, 4]
         });
 
+        // 1. Função principal que desenha o mapa
+        function drawMap(locations, isInitialLoad) {
+            let mapCenter = [DEFAULT_LAT, DEFAULT_LNG];
+            let zoomLevel = 10;
+            let lastLocationMarker = null;
 
-        const pathCoords = [];
-
-        // Adiciona os marcadores e constrói o caminho
-        locations.forEach((loc, index) => {
-            const position = [loc.latitude, loc.longitude];
-            pathCoords.push(position);
-
-            let iconToUse = historyIcon;
-            let markerTitle = `Ponto Histórico #${locations.length - index}`;
-
-            // Marcador especial para a ÚLTIMA localização
-            if (index === 0) {
-                iconToUse = latestIcon;
-                markerTitle = "ÚLTIMA LOCALIZAÇÃO";
+            // Limpa as camadas existentes
+            markersLayer.clearLayers();
+            if (polylineLayer) {
+                map.removeLayer(polylineLayer);
             }
 
-            // Converte o timestamp Unix (int64) para milissegundos
-            const timestamp = loc.updatedAt * 1000;
-            const dateStr = new Date(timestamp).toLocaleString('pt-BR');
-
-            // Cria o marcador
-            const marker = L.marker(position, {
-                icon: iconToUse,
-                title: markerTitle
-            }).addTo(map);
-
-            // Adiciona popup (balão de informação)
-            marker.bindPopup(`
-                <div class="text-start">
-                    <p class="fw-bold mb-1">${index === 0 ? 'ÚLTIMA LOCALIZAÇÃO' : 'Ponto Histórico'}</p>
-                    <p class="mb-0">Tempo: ${dateStr}</p>
-                    <p class="mb-0">Lat/Lng: ${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)}</p>
-                    <p class="mb-0 text-muted">Acurácia: ${loc.accuracy ? loc.accuracy + 'm' : 'N/A'}</p>
-                </div>
-            `);
-
-            if (index === 0) {
-                lastLocationMarker = marker;
+            if (locations && locations.length > 0) {
+                const latestLocation = locations[0];
+                mapCenter = [latestLocation.latitude, latestLocation.longitude];
+                zoomLevel = 15;
             }
+
+            // Se for a carga inicial, inicializa o objeto mapa
+            if (isInitialLoad) {
+                map = L.map('map', {
+                    center: mapCenter,
+                    zoom: zoomLevel,
+                    zoomControl: false
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                L.control.zoom({ position: 'topright' }).addTo(map);
+                L.control.scale({ imperial: false }).addTo(map);
+                markersLayer.addTo(map); // Adiciona a camada de marcadores
+            }
+
+            const pathCoords = [];
+
+            // Adiciona os marcadores e constrói o caminho
+            locations.forEach((loc, index) => {
+                const position = [loc.latitude, loc.longitude];
+                pathCoords.push(position);
+
+                let iconToUse = historyIcon;
+                let markerTitle = `Ponto Histórico #${locations.length - index}`;
+
+                if (index === 0) {
+                    iconToUse = latestIcon;
+                    markerTitle = "ÚLTIMA LOCALIZAÇÃO";
+                }
+
+                const timestamp = loc.updated_at;
+                const dateStr = new Date(timestamp).toLocaleString('pt-BR');
+                const marker = L.marker(position, {
+                    icon: iconToUse,
+                    title: markerTitle
+                });
+
+                marker.bindPopup(`
+                    <div class="text-start">
+                        <p class="fw-bold mb-1">${index === 0 ? 'ÚLTIMA LOCALIZAÇÃO' : 'Ponto Histórico'}</p>
+                        <p class="mb-0">Tempo: ${dateStr}</p>
+                        <p class="mb-0">Lat/Lng: ${loc.latitude.toFixed(4)}, ${loc.longitude.toFixed(4)}</p>
+                        <p class="mb-0 text-muted">Acurácia: ${loc.accuracy ? loc.accuracy + 'm' : 'N/A'}</p>
+                    </div>
+                `);
+
+                markersLayer.addLayer(marker);
+
+                if (index === 0) {
+                    lastLocationMarker = marker;
+                }
+            });
+
+            // Desenha a polilinha (caminho) - Reversa a ordem para ir do mais antigo ao mais novo
+            if (pathCoords.length > 1) {
+                const reversedPath = [...pathCoords].reverse();
+                polylineLayer = L.polyline(reversedPath, {
+                    color: '#007bff',
+                    weight: 5,
+                    opacity: 0.7
+                }).addTo(map);
+            }
+
+            // Centraliza e ajusta o zoom na carga inicial ou se for a primeira vez que há dados.
+            if (isInitialLoad && pathCoords.length > 0) {
+                const bounds = L.latLngBounds(pathCoords);
+                map.fitBounds(bounds, { padding: [20, 20] });
+            }
+
+            // Abre o popup do último marcador automaticamente
+            if (lastLocationMarker) {
+                lastLocationMarker.openPopup();
+                // Se a atualização for automática, centraliza o mapa no novo ponto
+                if (!isInitialLoad) {
+                    map.setView(lastLocationMarker.getLatLng(), map.getZoom());
+                }
+            }
+
+            // Atualiza o contador de localizações no painel de detalhes (Opcional)
+            document.querySelector('#locationCount').innerText = locations.length + ' de ' + LOCATION_LIMIT;
+        }
+
+        // 2. Função que busca os novos dados
+        async function fetchNewLocations() {
+            try {
+                // Monta a URL para o novo endpoint JSON
+                const url = /*[[@{/devices/{id}/locations/json(id=${device.id}, limit=${locationLimit})}]]*/ 'default-url';
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const newLocations = await response.json();
+
+                // Redesenha o mapa com os novos dados (false = não é carga inicial)
+                drawMap(newLocations, false);
+
+            } catch (error) {
+                console.error("Erro ao buscar novas localizações:", error);
+                // Aqui você pode adicionar um feedback visual de erro na interface
+            }
+        }
+
+        // 3. Inicialização
+        document.addEventListener('DOMContentLoaded', function () {
+            // Desenha o mapa inicialmente usando os dados passados pelo Thymeleaf
+            const initialLocations = [[${ locations }]];
+            drawMap(initialLocations, true);
+
+            // Inicia o intervalo de atualização
+            setInterval(fetchNewLocations, REFRESH_INTERVAL_MS);
         });
-
-        // Desenha a polilinha (caminho)
-        // Inverte a ordem das coordenadas para desenhar do ponto mais antigo (último na lista) para o mais recente (primeiro)
-        if (pathCoords.length > 1) {
-            const reversedPath = [...pathCoords].reverse();
-            L.polyline(reversedPath, {
-                color: '#007bff',
-                weight: 5,
-                opacity: 0.7
-            }).addTo(map);
-        }
-
-        // Abre o popup do último marcador automaticamente
-        if (lastLocationMarker) {
-            lastLocationMarker.openPopup();
-        }
-
-        // Se houver pontos, ajusta o mapa para mostrar todos os pontos
-        if (pathCoords.length > 0) {
-            const bounds = L.latLngBounds(pathCoords);
-            map.fitBounds(bounds, { padding: [20, 20] });
-        }
 
         /*]]>*/
     </script>
