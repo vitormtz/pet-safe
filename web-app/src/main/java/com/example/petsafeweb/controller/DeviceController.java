@@ -2,6 +2,7 @@ package com.example.petsafeweb.controller;
 
 import com.example.petsafeweb.dto.DeviceRequest;
 import com.example.petsafeweb.dto.DeviceResponse;
+import com.example.petsafeweb.dto.LocationResponse;
 import com.example.petsafeweb.service.DeviceService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -155,6 +156,43 @@ public class DeviceController {
         } catch (Exception e) {
             log.error("Erro ao excluir dispositivo", e);
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/devices";
+        }
+    }
+
+    /**
+     * Exibe a página de detalhes de um dispositivo, incluindo as localizações no
+     * mapa
+     */
+    @GetMapping("/{id}")
+    public String showDeviceDetails(@PathVariable("id") Long id,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        String authCheck = checkAuth(session, redirectAttributes);
+        if (authCheck != null)
+            return authCheck;
+
+        String accessToken = (String) session.getAttribute("accessToken");
+        final int LOCATION_LIMIT = 50; // Limite de 50 pontos, conforme solicitado
+
+        try {
+            // 1. Obter Detalhes do Dispositivo (usando /devices/{id}/status)
+            DeviceResponse device = deviceService.getDeviceDetails(id, accessToken);
+
+            // 2. Obter Localizações Recentes (usando /devices/{id}/locations/{limit})
+            List<LocationResponse> locations = deviceService.listDeviceLocations(id, LOCATION_LIMIT, accessToken);
+
+            // Adiciona dados ao modelo para o Thymeleaf
+            model.addAttribute("device", device);
+            model.addAttribute("locations", locations);
+            model.addAttribute("locationLimit", LOCATION_LIMIT);
+
+            return "device_details"; // Novo template
+
+        } catch (Exception e) {
+            log.error("Erro ao carregar detalhes do dispositivo {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Erro ao carregar detalhes: " + e.getMessage());
             return "redirect:/devices";
         }
     }

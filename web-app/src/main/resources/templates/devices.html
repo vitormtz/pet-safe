@@ -125,6 +125,9 @@
                                     <span th:text="${#numbers.formatDecimal(device.lastLatitude, 1, 4) + ', ' + #numbers.formatDecimal(device.lastLongitude, 1, 4)}">Coordenadas</span>
                                 </span>
                             </div>
+                            <a th:href="@{/devices/{id}(id=${device.id})}" class="btn btn-sm btn-outline-primary mt-3 w-100">
+    Ver Detalhes e Mapa <i class="bi bi-chevron-right ms-1"></i>
+</a>
                         </div>
                     </div>
                 </div>

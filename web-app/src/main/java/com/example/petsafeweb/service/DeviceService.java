@@ -13,6 +13,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import java.util.Map;
 
 import java.util.List;
 
@@ -181,6 +183,46 @@ public class DeviceService {
             throw new Exception("Erro ao excluir dispositivo. Tente novamente mais tarde.");
         } catch (Exception e) {
             log.error("Erro inesperado ao excluir dispositivo", e);
+            throw new Exception("Erro ao conectar com o servidor.");
+        }
+    }
+
+    /**
+     * Busca os detalhes/status de um dispositivo por ID.
+     * Mapeia para o endpoint Go: GET /devices/{id}/status
+     */
+    public DeviceResponse getDeviceDetails(Long deviceId, String accessToken) throws Exception {
+        // Rota corrigida para usar o endpoint /devices/{id}/status
+        String url = apiBaseUrl + devicesEndpoint + "/" + deviceId + "/status";
+
+        try {
+            HttpHeaders headers = createAuthHeaders(accessToken);
+            HttpEntity<?> request = new HttpEntity<>(headers);
+
+            // O endpoint DeviceStatus no Go retorna a estrutura do Device:
+            // c.JSON(http.StatusOK, gin.H{"data": device})
+            ResponseEntity<Map<String, DeviceResponse>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    request,
+                    new ParameterizedTypeReference<Map<String, DeviceResponse>>() {
+                    });
+
+            Map<String, DeviceResponse> body = response.getBody();
+            if (body == null || !body.containsKey("data")) {
+                throw new Exception("Resposta do servidor inválida ao buscar dispositivo.");
+            }
+
+            return body.get("data");
+
+        } catch (HttpClientErrorException e) {
+            log.error("Erro ao buscar detalhes do dispositivo. Status: {}", e.getStatusCode());
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new Exception("Dispositivo não encontrado.");
+            }
+            throw new Exception("Erro ao buscar detalhes. Status: " + e.getStatusCode());
+        } catch (Exception e) {
+            log.error("Erro inesperado ao buscar detalhes do dispositivo", e);
             throw new Exception("Erro ao conectar com o servidor.");
         }
     }
