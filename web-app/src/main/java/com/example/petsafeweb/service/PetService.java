@@ -7,7 +7,6 @@ import com.example.petsafeweb.dto.PetsListResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -53,11 +52,10 @@ public class PetService {
             HttpEntity<?> request = new HttpEntity<>(headers);
 
             ResponseEntity<PetsListResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                PetsListResponse.class
-            );
+                    url,
+                    HttpMethod.GET,
+                    request,
+                    PetsListResponse.class);
 
             PetsListResponse petsListResponse = response.getBody();
 
@@ -69,7 +67,7 @@ public class PetService {
 
         } catch (HttpClientErrorException e) {
             log.error("Erro ao listar pets. Status: {}, Body: {}",
-                e.getStatusCode(), e.getResponseBodyAsString());
+                    e.getStatusCode(), e.getResponseBodyAsString());
 
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                 throw new Exception("Sessão expirada. Faça login novamente.");
@@ -87,7 +85,7 @@ public class PetService {
     /**
      * Busca detalhes de um pet específico
      *
-     * @param petId ID do pet
+     * @param petId       ID do pet
      * @param accessToken Token de acesso do usuário
      * @return Dados do pet
      * @throws Exception Se houver erro na comunicação com a API
@@ -102,11 +100,10 @@ public class PetService {
             HttpEntity<?> request = new HttpEntity<>(headers);
 
             ResponseEntity<PetResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                PetResponse.class
-            );
+                    url,
+                    HttpMethod.GET,
+                    request,
+                    PetResponse.class);
 
             return response.getBody();
 
@@ -125,7 +122,7 @@ public class PetService {
     /**
      * Cria um novo pet
      *
-     * @param petRequest Dados do pet a ser criado
+     * @param petRequest  Dados do pet a ser criado
      * @param accessToken Token de acesso do usuário
      * @return Pet criado
      * @throws Exception Se houver erro na comunicação com a API
@@ -141,26 +138,24 @@ public class PetService {
             HttpEntity<PetRequest> request = new HttpEntity<>(petRequest, headers);
 
             ResponseEntity<PetResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                request,
-                PetResponse.class
-            );
+                    url,
+                    HttpMethod.POST,
+                    request,
+                    PetResponse.class);
 
             return response.getBody();
 
         } catch (HttpClientErrorException e) {
             log.error("Erro ao criar pet. Status: {}, Body: {}",
-                e.getStatusCode(), e.getResponseBodyAsString());
+                    e.getStatusCode(), e.getResponseBodyAsString());
 
             try {
                 ErrorResponse errorResponse = objectMapper.readValue(
-                    e.getResponseBodyAsString(),
-                    ErrorResponse.class
-                );
+                        e.getResponseBodyAsString(),
+                        ErrorResponse.class);
                 throw new Exception(errorResponse.getMessage() != null
-                    ? errorResponse.getMessage()
-                    : "Erro ao criar pet");
+                        ? errorResponse.getMessage()
+                        : "Erro ao criar pet");
             } catch (Exception parseException) {
                 if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                     throw new Exception("Dados inválidos. Verifique as informações e tente novamente.");
@@ -178,8 +173,8 @@ public class PetService {
     /**
      * Atualiza dados de um pet
      *
-     * @param petId ID do pet a ser atualizado
-     * @param petRequest Novos dados do pet
+     * @param petId       ID do pet a ser atualizado
+     * @param petRequest  Novos dados do pet
      * @param accessToken Token de acesso do usuário
      * @return Pet atualizado
      * @throws Exception Se houver erro na comunicação com a API
@@ -195,26 +190,24 @@ public class PetService {
             HttpEntity<PetRequest> request = new HttpEntity<>(petRequest, headers);
 
             ResponseEntity<PetResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.PATCH,
-                request,
-                PetResponse.class
-            );
+                    url,
+                    HttpMethod.PATCH,
+                    request,
+                    PetResponse.class);
 
             return response.getBody();
 
         } catch (HttpClientErrorException e) {
             log.error("Erro ao atualizar pet. Status: {}, Body: {}",
-                e.getStatusCode(), e.getResponseBodyAsString());
+                    e.getStatusCode(), e.getResponseBodyAsString());
 
             try {
                 ErrorResponse errorResponse = objectMapper.readValue(
-                    e.getResponseBodyAsString(),
-                    ErrorResponse.class
-                );
+                        e.getResponseBodyAsString(),
+                        ErrorResponse.class);
                 throw new Exception(errorResponse.getMessage() != null
-                    ? errorResponse.getMessage()
-                    : "Erro ao atualizar pet");
+                        ? errorResponse.getMessage()
+                        : "Erro ao atualizar pet");
             } catch (Exception parseException) {
                 if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                     throw new Exception("Pet não encontrado.");
@@ -235,7 +228,7 @@ public class PetService {
     /**
      * Exclui um pet
      *
-     * @param petId ID do pet a ser excluído
+     * @param petId       ID do pet a ser excluído
      * @param accessToken Token de acesso do usuário
      * @throws Exception Se houver erro na comunicação com a API
      */
@@ -249,11 +242,10 @@ public class PetService {
             HttpEntity<?> request = new HttpEntity<>(headers);
 
             restTemplate.exchange(
-                url,
-                HttpMethod.DELETE,
-                request,
-                Void.class
-            );
+                    url,
+                    HttpMethod.DELETE,
+                    request,
+                    Void.class);
 
         } catch (HttpClientErrorException e) {
             log.error("Erro ao excluir pet. Status: {}", e.getStatusCode());
