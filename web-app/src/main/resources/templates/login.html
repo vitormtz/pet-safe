@@ -64,7 +64,6 @@
                                        id="email"
                                        name="email"
                                        th:field="*{email}"
-                                       th:value="${email}"
                                        placeholder="seu@email.com"
                                        required>
                                 <div class="invalid-feedback">
@@ -177,6 +176,24 @@
 
     <!-- Login Page Scripts -->
     <script th:inline="javascript">
+        // Preserve form values
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailField = document.getElementById('email');
+            const passwordField = document.getElementById('password');
+
+            // Get values from Thymeleaf
+            const preservedEmail = /*[[${loginRequest?.email}]]*/ '';
+            const preservedPassword = /*[[${loginRequest?.password}]]*/ '';
+
+            // Set values if they exist
+            if (preservedEmail) {
+                emailField.value = preservedEmail;
+            }
+            if (preservedPassword) {
+                passwordField.value = preservedPassword;
+            }
+        });
+
         // Toggle password visibility
         document.getElementById('togglePassword').addEventListener('click', function () {
             const passwordField = document.getElementById('password');
