@@ -63,30 +63,49 @@ public class AuthService {
             return response.getBody();
 
         } catch (HttpClientErrorException e) {
-            log.error("Erro ao registrar usuário. Status: {}, Body: {}",
-                e.getStatusCode(), e.getResponseBodyAsString());
+            // Logar apenas se não for erro esperado de validação
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST || e.getStatusCode() == HttpStatus.CONFLICT) {
+                log.debug("Tentativa de registro falhou - Status: {}", e.getStatusCode());
+            } else {
+                log.error("Erro ao registrar usuário. Status: {}, Body: {}",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            }
 
             // Tentar parsear a resposta de erro
+            String errorMessage = null;
             try {
                 ErrorResponse errorResponse = objectMapper.readValue(
                     e.getResponseBodyAsString(),
                     ErrorResponse.class
                 );
-                throw new Exception(errorResponse.getMessage() != null
-                    ? errorResponse.getMessage()
-                    : "Erro ao registrar usuário");
+                errorMessage = errorResponse.getMessage();
             } catch (Exception parseException) {
-                // Se não conseguir parsear, retornar mensagem genérica
-                if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                    throw new Exception("Dados inválidos. Verifique as informações e tente novamente.");
-                } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
-                    throw new Exception("E-mail já cadastrado. Tente fazer login ou use outro e-mail.");
-                } else {
-                    throw new Exception("Erro ao registrar usuário. Tente novamente mais tarde.");
-                }
+                log.debug("Não foi possível parsear a resposta de erro");
+            }
+
+            // Se conseguiu parsear e tem mensagem, usar a mensagem da API
+            if (errorMessage != null && !errorMessage.trim().isEmpty()) {
+                throw new Exception(errorMessage);
+            }
+
+            // Caso contrário, retornar mensagem baseada no status HTTP
+            if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new Exception("Dados inválidos. Verifique as informações e tente novamente.");
+            } else if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                throw new Exception("E-mail já cadastrado. Tente fazer login ou use outro e-mail.");
+            } else {
+                throw new Exception("Erro ao registrar usuário. Tente novamente mais tarde.");
             }
 
         } catch (Exception e) {
+            // Se a exceção já foi tratada e tem uma mensagem customizada, re-lançar sem logar
+            if (e.getMessage() != null &&
+                (e.getMessage().contains("Dados inválidos") ||
+                 e.getMessage().contains("E-mail já cadastrado") ||
+                 e.getMessage().contains("Erro ao registrar usuário"))) {
+                throw e;
+            }
+
             log.error("Erro inesperado ao registrar usuário", e);
             throw new Exception("Erro ao conectar com o servidor. Tente novamente mais tarde.");
         }
@@ -118,30 +137,49 @@ public class AuthService {
             return response.getBody();
 
         } catch (HttpClientErrorException e) {
-            log.error("Erro ao fazer login. Status: {}, Body: {}",
-                e.getStatusCode(), e.getResponseBodyAsString());
+            // Logar apenas se não for erro de autenticação esperado
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                log.debug("Tentativa de login falhou - credenciais inválidas");
+            } else {
+                log.error("Erro ao fazer login. Status: {}, Body: {}",
+                    e.getStatusCode(), e.getResponseBodyAsString());
+            }
 
             // Tentar parsear a resposta de erro
+            String errorMessage = null;
             try {
                 ErrorResponse errorResponse = objectMapper.readValue(
                     e.getResponseBodyAsString(),
                     ErrorResponse.class
                 );
-                throw new Exception(errorResponse.getMessage() != null
-                    ? errorResponse.getMessage()
-                    : "Erro ao fazer login");
+                errorMessage = errorResponse.getMessage();
             } catch (Exception parseException) {
-                // Se não conseguir parsear, retornar mensagem genérica
-                if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-                    throw new Exception("E-mail ou senha incorretos. Tente novamente.");
-                } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                    throw new Exception("Dados inválidos. Verifique as informações e tente novamente.");
-                } else {
-                    throw new Exception("Erro ao fazer login. Tente novamente mais tarde.");
-                }
+                log.debug("Não foi possível parsear a resposta de erro");
+            }
+
+            // Se conseguiu parsear e tem mensagem, usar a mensagem da API
+            if (errorMessage != null && !errorMessage.trim().isEmpty()) {
+                throw new Exception(errorMessage);
+            }
+
+            // Caso contrário, retornar mensagem baseada no status HTTP
+            if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+                throw new Exception("E-mail ou senha incorretos. Tente novamente.");
+            } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new Exception("Dados inválidos. Verifique as informações e tente novamente.");
+            } else {
+                throw new Exception("Erro ao fazer login. Tente novamente mais tarde.");
             }
 
         } catch (Exception e) {
+            // Se a exceção já foi tratada e tem uma mensagem customizada, re-lançar sem logar
+            if (e.getMessage() != null &&
+                (e.getMessage().contains("E-mail ou senha") ||
+                 e.getMessage().contains("Dados inválidos") ||
+                 e.getMessage().contains("Erro ao fazer login"))) {
+                throw e;
+            }
+
             log.error("Erro inesperado ao fazer login", e);
             throw new Exception("Erro ao conectar com o servidor. Tente novamente mais tarde.");
         }
