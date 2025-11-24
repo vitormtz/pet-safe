@@ -34,17 +34,20 @@ public class LoginController {
     @PostMapping("/login")
     public String login(@ModelAttribute LoginRequest loginRequest,
                        HttpSession session,
-                       RedirectAttributes redirectAttributes) {
+                       RedirectAttributes redirectAttributes,
+                       Model model) {
         try {
             // Validar campos
             if (loginRequest.getEmail() == null || loginRequest.getEmail().trim().isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "E-mail é obrigatório");
-                return "redirect:/login";
+                model.addAttribute("error", "E-mail é obrigatório");
+                model.addAttribute("loginRequest", loginRequest);
+                return "login";
             }
 
             if (loginRequest.getPassword() == null || loginRequest.getPassword().trim().isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Senha é obrigatória");
-                return "redirect:/login";
+                model.addAttribute("error", "Senha é obrigatória");
+                model.addAttribute("loginRequest", loginRequest);
+                return "login";
             }
 
             // Fazer login via API
@@ -63,10 +66,13 @@ public class LoginController {
             return "redirect:/";
 
         } catch (Exception e) {
-            log.error("Erro ao fazer login", e);
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            redirectAttributes.addFlashAttribute("email", loginRequest.getEmail());
-            return "redirect:/login";
+            // Apenas logar se for um erro inesperado (não de autenticação)
+            if (e.getMessage() == null || !e.getMessage().contains("E-mail ou senha")) {
+                log.error("Erro ao fazer login", e);
+            }
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("loginRequest", loginRequest);
+            return "login";
         }
     }
 
