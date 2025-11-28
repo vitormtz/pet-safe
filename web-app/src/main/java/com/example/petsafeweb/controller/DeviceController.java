@@ -174,19 +174,20 @@ public class DeviceController {
             return authCheck;
 
         String accessToken = (String) session.getAttribute("accessToken");
-        final int LOCATION_LIMIT = 50; // Limite de 50 pontos, conforme solicitado
-
+        final int API_LIMIT = 10; // Limite de 50 pontos, conforme solicitado
+        final int DISPLAY_LIMIT = 3;
         try {
             // 1. Obter Detalhes do Dispositivo (usando /devices/{id}/status)
             DeviceResponse device = deviceService.getDeviceDetails(id, accessToken);
 
             // 2. Obter Localizações Recentes (usando /devices/{id}/locations/{limit})
-            List<LocationResponse> locations = deviceService.listDeviceLocations(id, LOCATION_LIMIT, accessToken);
+            List<LocationResponse> locations = deviceService.listDeviceLocations(id, API_LIMIT, accessToken);
 
             // Adiciona dados ao modelo para o Thymeleaf
             model.addAttribute("device", device);
             model.addAttribute("locations", locations);
-            model.addAttribute("locationLimit", LOCATION_LIMIT);
+            model.addAttribute("locationLimit", API_LIMIT);
+            model.addAttribute("mapDisplayLimit", DISPLAY_LIMIT);
 
             return "device_details"; // Novo template
 

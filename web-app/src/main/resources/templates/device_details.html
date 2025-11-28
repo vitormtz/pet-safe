@@ -20,6 +20,18 @@
             /* Altura fixa para o mapa */
             width: 100%;
             border-radius: 0.5rem;
+            position: relative;
+            /* Garante que o botão flutuante seja posicionado corretamente */
+        }
+
+        #recenterButton {
+            position: absolute;
+            top: 10px;
+            right: 50px;
+            /* Ajuste para não colidir com o controle de zoom do Leaflet */
+            z-index: 1000;
+            /* Garante que fique acima do mapa */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .detail-icon {
@@ -118,21 +130,10 @@
                         <div class="d-flex align-items-center mb-3">
                             <i class="bi bi-pin-map-fill detail-icon me-3"></i>
                             <div>
-                                <small class="text-muted">Última Coord. (Retorno da API)</small>
+                                <small class="text-muted">Última Coordenadas</small>
                                 <p class="mb-0 fw-bold"
                                     th:text="${(device.lastLatitude != null and device.lastLongitude != null) ? #numbers.formatDecimal(device.lastLatitude, 1, 4) + ', ' + #numbers.formatDecimal(device.lastLongitude, 1, 4) : 'N/A'}">
                                     -23.xxx, -46.xxx
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="d-flex align-items-center">
-                            <i class="bi bi-database-fill detail-icon me-3"></i>
-                            <div>
-                                <small class="text-muted">Localizações Carregadas</small>
-                                <p class="mb-0 fw-bold">
-                                    <span id="locationCount"
-                                        th:text="${locations.size()} + ' de ' + ${locationLimit}">50 de 50</span>
                                 </p>
                             </div>
                         </div>
@@ -143,10 +144,11 @@
 
             <div class="col-lg-8">
                 <div class="card h-100">
-                    <div class="card-header bg-secondary text-white fw-bold">
-                        <i class="bi bi-map me-2"></i>Últimas Localizações no Mapa
-                    </div>
                     <div class="card-body p-0">
+                        <button id="recenterButton" class="btn btn-sm btn-primary"
+                            title="Centralizar Mapa na Última Localização">
+                            <i class="bi bi-bullseye"></i> Centralizar
+                        </button>
                         <div id="map"></div>
                     </div>
                 </div>
@@ -168,11 +170,17 @@
         let polylineLayer;
         let markersLayer = L.layerGroup();
         const DEVICE_ID = [[${ device.id }]];
-        const LOCATION_LIMIT = [[${ locationLimit }]];
-        const REFRESH_INTERVAL_MS = 5000; // 5 segundos
+
+        const API_LIMIT = [[${ locationLimit }]];
+        const DISPLAY_LIMIT = [[${ mapDisplayLimit }]];
+
+        const REFRESH_INTERVAL_MS = 30000; // 30 segundos
 
         const DEFAULT_LAT = -23.5505; // Centro de São Paulo
         const DEFAULT_LNG = -46.6333;
+
+        // Armazenar a última localização conhecida para evitar repetição
+        let lastKnownPosition = null;
 
         // Ícones Leaflet (o CSS deve estar no <style>)
         const latestIcon = L.divIcon({
@@ -190,8 +198,21 @@
             iconAnchor: [4, 4]
         });
 
+        // FUNÇÃO DE CENTRALIZAÇÃO MANUAL
+        function recenterMap() {
+            if (lastKnownPosition) {
+                // Centraliza o mapa na última posição conhecida com um zoom razoável
+                map.setView(lastKnownPosition, 15);
+                console.log("Mapa centralizado manualmente em:", lastKnownPosition);
+            } else {
+                console.warn("Não há posição conhecida para centralizar.");
+            }
+        }
+
         // 1. Função principal que desenha o mapa
-        function drawMap(locations, isInitialLoad) {
+        function drawMap(fullLocations, isInitialLoad, shouldReCenter = false) {
+            const locationsToDisplay = fullLocations.slice(0, DISPLAY_LIMIT);
+
             let mapCenter = [DEFAULT_LAT, DEFAULT_LNG];
             let zoomLevel = 10;
             let lastLocationMarker = null;
@@ -202,10 +223,13 @@
                 map.removeLayer(polylineLayer);
             }
 
-            if (locations && locations.length > 0) {
-                const latestLocation = locations[0];
+            if (locationsToDisplay && locationsToDisplay.length > 0) {
+                const latestLocation = locationsToDisplay[0];
                 mapCenter = [latestLocation.latitude, latestLocation.longitude];
                 zoomLevel = 15;
+                lastKnownPosition = mapCenter; // Atualiza a última posição conhecida
+            } else {
+                lastKnownPosition = null;
             }
 
             // Se for a carga inicial, inicializa o objeto mapa
@@ -222,26 +246,28 @@
 
                 L.control.zoom({ position: 'topright' }).addTo(map);
                 L.control.scale({ imperial: false }).addTo(map);
-                markersLayer.addTo(map); // Adiciona a camada de marcadores
+                markersLayer.addTo(map);
             }
 
             const pathCoords = [];
 
             // Adiciona os marcadores e constrói o caminho
-            locations.forEach((loc, index) => {
+            locationsToDisplay.forEach((loc, index) => {
                 const position = [loc.latitude, loc.longitude];
                 pathCoords.push(position);
 
                 let iconToUse = historyIcon;
-                let markerTitle = `Ponto Histórico #${locations.length - index}`;
+                let markerTitle = `Ponto Histórico #${locationsToDisplay.length - index}`;
 
                 if (index === 0) {
                     iconToUse = latestIcon;
                     markerTitle = "ÚLTIMA LOCALIZAÇÃO";
                 }
 
-                const timestamp = loc.updated_at;
+                console.log(loc);
+                const timestamp = loc.updated_at * 1000;
                 const dateStr = new Date(timestamp).toLocaleString('pt-BR');
+
                 const marker = L.marker(position, {
                     icon: iconToUse,
                     title: markerTitle
@@ -263,7 +289,7 @@
                 }
             });
 
-            // Desenha a polilinha (caminho) - Reversa a ordem para ir do mais antigo ao mais novo
+            // Desenha a polilinha (caminho)
             if (pathCoords.length > 1) {
                 const reversedPath = [...pathCoords].reverse();
                 polylineLayer = L.polyline(reversedPath, {
@@ -273,29 +299,27 @@
                 }).addTo(map);
             }
 
-            // Centraliza e ajusta o zoom na carga inicial ou se for a primeira vez que há dados.
-            if (isInitialLoad && pathCoords.length > 0) {
+            // Centraliza o mapa SOMENTE se for carga inicial OU se for solicitada centralização (após um novo ponto ou clique manual)
+            if (shouldReCenter && lastLocationMarker) {
+                // Centraliza o mapa na última posição conhecida, mantendo o nível de zoom
+                map.setView(lastLocationMarker.getLatLng(), map.getZoom());
+                lastLocationMarker.openPopup();
+            } else if (isInitialLoad && pathCoords.length > 0) {
+                // Ajusta o mapa para mostrar todos os pontos apenas na carga inicial
                 const bounds = L.latLngBounds(pathCoords);
                 map.fitBounds(bounds, { padding: [20, 20] });
+                lastLocationMarker.openPopup(); // Abre o popup inicial
             }
 
-            // Abre o popup do último marcador automaticamente
-            if (lastLocationMarker) {
+            // Abre o popup do último marcador na carga inicial se não houve ajuste de bounds
+            if (isInitialLoad && lastLocationMarker && pathCoords.length <= 1) {
                 lastLocationMarker.openPopup();
-                // Se a atualização for automática, centraliza o mapa no novo ponto
-                if (!isInitialLoad) {
-                    map.setView(lastLocationMarker.getLatLng(), map.getZoom());
-                }
             }
-
-            // Atualiza o contador de localizações no painel de detalhes (Opcional)
-            document.querySelector('#locationCount').innerText = locations.length + ' de ' + LOCATION_LIMIT;
         }
 
         // 2. Função que busca os novos dados
         async function fetchNewLocations() {
             try {
-                // Monta a URL para o novo endpoint JSON
                 const url = /*[[@{/devices/{id}/locations/json(id=${device.id}, limit=${locationLimit})}]]*/ 'default-url';
 
                 const response = await fetch(url, {
@@ -311,23 +335,48 @@
 
                 const newLocations = await response.json();
 
-                // Redesenha o mapa com os novos dados (false = não é carga inicial)
-                drawMap(newLocations, false);
+                let shouldReCenter = false;
+
+                // Lógica para verificar se houve atualização
+                if (newLocations && newLocations.length > 0) {
+                    const latestLat = newLocations[0].latitude;
+                    const latestLng = newLocations[0].longitude;
+
+                    // Compara a nova posição com a última conhecida
+                    if (!lastKnownPosition ||
+                        lastKnownPosition[0] !== latestLat ||
+                        lastKnownPosition[1] !== latestLng) {
+
+                        shouldReCenter = true; // Centraliza e abre o popup apenas se o ponto for novo
+                        lastKnownPosition = [latestLat, latestLng]; // Atualiza a última conhecida
+                        console.log("Nova localização detectada. Centralizando.");
+                    } else {
+                        console.log("Nenhuma nova localização detectada. Mantendo a visão atual.");
+                    }
+                }
+
+                // Redesenha o mapa (passando a flag shouldReCenter)
+                drawMap(newLocations, false, shouldReCenter);
 
             } catch (error) {
                 console.error("Erro ao buscar novas localizações:", error);
-                // Aqui você pode adicionar um feedback visual de erro na interface
             }
         }
 
         // 3. Inicialização
         document.addEventListener('DOMContentLoaded', function () {
-            // Desenha o mapa inicialmente usando os dados passados pelo Thymeleaf
+            // 3.1 Desenha o mapa inicialmente
             const initialLocations = [[${ locations }]];
-            drawMap(initialLocations, true);
+            drawMap(initialLocations, true, false); // Carga inicial ajusta bounds, não precisa centralizar
 
-            // Inicia o intervalo de atualização
+            // 3.2 Inicia o intervalo de atualização
             setInterval(fetchNewLocations, REFRESH_INTERVAL_MS);
+
+            // 3.3 Adiciona listener ao botão de centralização
+            const recenterBtn = document.getElementById('recenterButton');
+            if (recenterBtn) {
+                recenterBtn.addEventListener('click', recenterMap);
+            }
         });
 
         /*]]>*/
