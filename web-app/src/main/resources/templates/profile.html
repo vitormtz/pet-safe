@@ -236,13 +236,11 @@
         <div class="profile-body">
             <!-- Alert Messages -->
             <div th:if="${error}" class="alert alert-danger alert-profile alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <span th:text="${error}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
 
             <div th:if="${success}" class="alert alert-success alert-profile alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>
                 <span th:text="${success}"></span>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
