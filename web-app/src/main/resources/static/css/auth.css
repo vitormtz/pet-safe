@@ -73,6 +73,10 @@
     color: var(--primary-color);
 }
 
+.auth-form-container .input-group-text .bi-lock-fill {
+    transform: scale(1, 0.9);
+}
+
 .auth-form-container .form-control {
     border-left: none;
     padding: 0.75rem 1rem;
