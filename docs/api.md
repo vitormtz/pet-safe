@@ -53,6 +53,14 @@ PATCH /me → atualizar nome, telefone etc do usuário logado.
 }
 ```
 
+PATCH /me/password → alterar senha do usuário logado
+``` json
+{
+    "current_password": "" required
+    "new_password": "" required,min=8
+}
+```
+
 <!-- Para admins
 GET /users/{id} → obter dados do usuário (exceto hash da senha)
 
