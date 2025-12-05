@@ -1,5 +1,6 @@
 package com.example.petsafeweb.controller;
 
+import com.example.petsafeweb.dto.UpdatePasswordRequest;
 import com.example.petsafeweb.dto.UpdateProfileRequest;
 import com.example.petsafeweb.dto.UserProfileResponse;
 import com.example.petsafeweb.service.UserService;
@@ -8,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -56,7 +57,10 @@ public class ProfileController {
     }
 
     @PostMapping("/profile/update")
-    public String updateProfile(@ModelAttribute UpdateProfileRequest updateRequest,
+    public String updateProfile(@RequestParam("fullName") String fullName,
+                               @RequestParam("phone") String phone,
+                               @RequestParam(value = "currentPassword", required = false) String currentPassword,
+                               @RequestParam(value = "newPassword", required = false) String newPassword,
                                HttpSession session,
                                RedirectAttributes redirectAttributes,
                                Model model) {
@@ -72,36 +76,51 @@ public class ProfileController {
             String accessToken = (String) session.getAttribute("accessToken");
 
             // Validar campos obrigatórios
-            if (updateRequest.getFullName() == null || updateRequest.getFullName().trim().isEmpty()) {
+            if (fullName == null || fullName.trim().isEmpty()) {
                 throw new Exception("Nome completo é obrigatório");
             }
 
-            if (updateRequest.getPhone() == null || updateRequest.getPhone().trim().isEmpty()) {
+            if (phone == null || phone.trim().isEmpty()) {
                 throw new Exception("Telefone é obrigatório");
             }
 
-            // Se está alterando senha, validar campos de senha
-            if (updateRequest.getNewPassword() != null && !updateRequest.getNewPassword().trim().isEmpty()) {
-                if (updateRequest.getCurrentPassword() == null || updateRequest.getCurrentPassword().trim().isEmpty()) {
+            // Validar senha ANTES de salvar qualquer coisa
+            boolean isChangingPassword = newPassword != null && !newPassword.trim().isEmpty();
+            if (isChangingPassword) {
+                if (currentPassword == null || currentPassword.trim().isEmpty()) {
                     throw new Exception("Para alterar a senha, informe a senha atual");
                 }
-                if (updateRequest.getNewPassword().length() < 8) {
+                if (newPassword.length() < 8) {
                     throw new Exception("A nova senha deve ter no mínimo 8 caracteres");
                 }
-            } else {
-                // Se não está alterando senha, remover campos de senha da requisição
-                updateRequest.setCurrentPassword(null);
-                updateRequest.setNewPassword(null);
             }
 
-            // Atualizar perfil via API
-            UserProfileResponse updatedProfile = userService.updateUserProfile(userId, updateRequest, accessToken);
+            // Se está alterando senha, atualizar senha PRIMEIRO
+            if (isChangingPassword) {
+                UpdatePasswordRequest passwordRequest = UpdatePasswordRequest.builder()
+                        .currentPassword(currentPassword)
+                        .newPassword(newPassword)
+                        .build();
+
+                userService.updateUserPassword(passwordRequest, accessToken);
+            }
+
+            // Só depois de validar/atualizar senha, atualizar dados do perfil
+            UpdateProfileRequest profileRequest = UpdateProfileRequest.builder()
+                    .fullName(fullName.trim())
+                    .phone(phone.trim())
+                    .build();
+
+            UserProfileResponse updatedProfile = userService.updateUserProfile(profileRequest, accessToken);
 
             // Atualizar dados na sessão
             session.setAttribute("userFullName", updatedProfile.getFullName());
 
             // Redirecionar com mensagem de sucesso
-            redirectAttributes.addFlashAttribute("success", "Perfil atualizado com sucesso!");
+            String successMessage = isChangingPassword
+                    ? "Perfil e senha atualizados com sucesso!"
+                    : "Perfil atualizado com sucesso!";
+            redirectAttributes.addFlashAttribute("success", successMessage);
             return "redirect:/profile";
 
         } catch (Exception e) {
@@ -118,7 +137,6 @@ public class ProfileController {
             }
 
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("updateRequest", updateRequest);
             return "profile";
         }
     }
