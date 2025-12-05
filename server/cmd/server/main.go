@@ -38,6 +38,7 @@ func main() {
 		{
 			secured.GET("/me", handlers.GetMe)
 			secured.PATCH("/me", handlers.UpdateUser)
+			secured.PATCH("/me/password", handlers.UpdatePassword)
 
 			// secured.GET("/users/:id", handlers.GetUserByID) // cuidado: permitir só admin
 			// TODO:
