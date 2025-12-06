@@ -37,6 +37,18 @@ func CreateDevice(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to create device (duplicate serial?)"})
 		return
 	}
+
+	// Auto-associa todos os geofences ativos do usuário a este device
+	var geofences []models.Geofence
+	db.DB.Where("owner_id = ? AND active = ?", ownerID, true).Find(&geofences)
+	for _, gf := range geofences {
+		gfd := models.GeofenceDevice{
+			GeofenceID: gf.ID,
+			DeviceID:   d.ID,
+		}
+		db.DB.Create(&gfd)
+	}
+
 	c.JSON(http.StatusCreated, gin.H{"data": d})
 }
 
