@@ -119,22 +119,79 @@ GET /devices/{id}/locations/{n limit} → rota do dispositivo (últimos N pontos
 
 <!-- GET /devices/{id}/battery-history → histórico de bateria -->
 
-<!-- 
 ## 🛰️ Geofences
 
-POST /geofences → criar cerca eletrônica (circle: centro + raio)
+⚠️ **IMPORTANTE**: Cada usuário pode ter apenas **1 geofence**. O geofence é automaticamente associado a todos os dispositivos do usuário.
 
-GET /geofences → listar geofences do usuário
+**POST /geofence** → criar geofence (área segura circular)
+``` json
+{
+    "name": "" required,
+    "latitude": "" required (numeric),
+    "longitude": "" required (numeric),
+    "radius_m": "" required (integer, raio em metros)
+}
+```
+**Retorno de sucesso:**
+``` json
+{
+    "data": {
+        "id": 1,
+        "owner_id": 2,
+        "name": "Casa",
+        "latitude": -23.550520,
+        "longitude": -46.633308,
+        "radius_m": 100,
+        "active": true,
+        "created_at": "2025-12-06T14:30:00Z"
+    }
+}
+```
+**Retorno de erro (já existe geofence):**
+``` json
+{
+    "error": "Você já possui um geofence cadastrado. Delete o existente para criar um novo."
+}
+```
 
-GET /geofences/{id} → detalhes
+**GET /geofence** → obter o geofence do usuário
+``` json
+{
+    "data": {
+        "id": 1,
+        "owner_id": 2,
+        "name": "Casa",
+        "latitude": -23.550520,
+        "longitude": -46.633308,
+        "radius_m": 100,
+        "active": true,
+        "created_at": "2025-12-06T14:30:00Z"
+    }
+}
+```
 
-PATCH /geofences/{id} → atualizar
+**PATCH /geofence** → atualizar geofence do usuário
+``` json
+{
+    "name": "" (opcional),
+    "latitude": "" (opcional, numeric),
+    "longitude": "" (opcional, numeric),
+    "radius_m": "" (opcional, integer),
+    "active": "" (opcional, boolean)
+}
+```
 
-DELETE /geofences/{id} → excluir
+**DELETE /geofence** → excluir o geofence do usuário
+``` json
+{
+    "data": true
+}
+```
 
-POST /geofences/{id}/devices → vincular dispositivos a geofence
-
-DELETE /geofences/{id}/devices/{device_id} → remover vínculo
+### Comportamento automático:
+- ✅ Ao criar um **geofence**: Automaticamente associa a todos os devices do usuário
+- ✅ Ao criar um **device**: Automaticamente associa ao geofence do usuário (se existir)
+- ✅ A associação é feita na tabela `geofence_device`
 
 ## ⚠️ Alertas & Notificações
 
