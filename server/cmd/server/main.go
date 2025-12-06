@@ -63,6 +63,12 @@ func main() {
 			secured.GET("/devices/:id/locations/:limit", handlers.ListDeviceLocations)
 			// GET /devices/{id}/battery-history → histórico de bateria
 
+			// geofences (apenas 1 por usuário)
+			secured.POST("/geofence", handlers.CreateGeofence)
+			secured.GET("/geofence", handlers.GetGeofence)
+			secured.PATCH("/geofence", handlers.UpdateGeofence)
+			secured.DELETE("/geofence", handlers.DeleteGeofence)
+
 		}
 	}
 
