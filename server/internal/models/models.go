@@ -63,7 +63,9 @@ type Geofence struct {
 	ID        uint64    `gorm:"primaryKey" json:"id"`
 	OwnerID   uint64    `gorm:"not null;index" json:"owner_id"`
 	Name      string    `gorm:"size:100" json:"name"`
-	Geometry  string    `gorm:"type:circle;not null" json:"geometry"`
+	Latitude  float64   `gorm:"type:numeric(9,6);not null" json:"latitude"`
+	Longitude float64   `gorm:"type:numeric(9,6);not null" json:"longitude"`
+	RadiusM   int       `gorm:"not null" json:"radius_m"`
 	Active    bool      `gorm:"default:true" json:"active"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 }
@@ -97,6 +99,15 @@ type Location struct {
 	Heading    *float32  `json:"heading"`
 	UpdatedAt  int64     `json:"updated_at"`
 	ReceivedAt time.Time `gorm:"autoCreateTime" json:"received_at"`
+}
+
+type GeofenceDevice struct {
+	GeofenceID uint64 `gorm:"primaryKey;autoIncrement:false" json:"geofence_id"`
+	DeviceID   uint64 `gorm:"primaryKey;autoIncrement:false" json:"device_id"`
+}
+
+func (GeofenceDevice) TableName() string {
+	return "geofence_device"
 }
 
 type RefreshToken struct {
