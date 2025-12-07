@@ -40,6 +40,9 @@
                     <!-- Menu do usuário quando ESTIVER logado -->
                     <th:block th:if="${session.isAuthenticated != null and session.isAuthenticated}">
                         <li class="nav-item d-flex align-items-center">
+                            <a class="nav-link" href="/geofence">Área Segura</a>
+                        </li>
+                        <li class="nav-item d-flex align-items-center">
                             <a class="nav-link" href="/pets">Meus Pets</a>
                         </li>
                         <li class="nav-item d-flex align-items-center">
