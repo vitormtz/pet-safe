@@ -2,8 +2,10 @@ package com.example.petsafeweb.controller;
 
 import com.example.petsafeweb.dto.DeviceRequest;
 import com.example.petsafeweb.dto.DeviceResponse;
+import com.example.petsafeweb.dto.GeofenceResponse;
 import com.example.petsafeweb.dto.LocationResponse;
 import com.example.petsafeweb.service.DeviceService;
+import com.example.petsafeweb.service.GeofenceService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -22,9 +24,11 @@ import java.util.List;
 public class DeviceController {
 
     private final DeviceService deviceService;
+    private final GeofenceService geofenceService;
 
-    public DeviceController(DeviceService deviceService) {
+    public DeviceController(DeviceService deviceService, GeofenceService geofenceService) {
         this.deviceService = deviceService;
+        this.geofenceService = geofenceService;
     }
 
     private String checkAuth(HttpSession session, RedirectAttributes redirectAttributes) {
@@ -50,6 +54,14 @@ public class DeviceController {
         String accessToken = (String) session.getAttribute("accessToken");
 
         try {
+            // VERIFICA SE O USUÁRIO JÁ CADASTROU UM GEOFENCE
+            GeofenceResponse geofence = geofenceService.getGeofence(accessToken);
+            if (geofence == null) {
+                redirectAttributes.addFlashAttribute("error",
+                    "Você precisa cadastrar uma Área Segura (Geofence) antes de gerenciar dispositivos.");
+                return "redirect:/geofence";
+            }
+
             List<DeviceResponse> devices = deviceService.listDevices(accessToken);
 
             model.addAttribute("devices", devices != null ? devices : List.of());
