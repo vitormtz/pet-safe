@@ -15,7 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  */
 @Slf4j
 @Controller
-@RequestMapping("/geofence")
+@RequestMapping("/area-segura")
 public class GeofenceController {
 
     private final GeofenceService geofenceService;
@@ -97,18 +97,18 @@ public class GeofenceController {
             if (existing != null) {
                 // Atualizar
                 geofenceService.updateGeofence(request, accessToken);
-                redirectAttributes.addFlashAttribute("success", "Geofence atualizado com sucesso!");
+                redirectAttributes.addFlashAttribute("success", "Área segura atualizada com sucesso!");
             } else {
                 // Criar
                 geofenceService.createGeofence(request, accessToken);
-                redirectAttributes.addFlashAttribute("success", "Geofence criado com sucesso!");
+                redirectAttributes.addFlashAttribute("success", "Área segura criada com sucesso!");
             }
 
-            return "redirect:/geofence";
+            return "redirect:/area-segura";
         } catch (Exception e) {
             log.error("Erro ao salvar geofence", e);
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/geofence";
+            return "redirect:/area-segura";
         }
     }
 
@@ -126,11 +126,11 @@ public class GeofenceController {
         try {
             geofenceService.deleteGeofence(accessToken);
             redirectAttributes.addFlashAttribute("success", "Geofence removido com sucesso!");
-            return "redirect:/geofence";
+            return "redirect:/area-segura";
         } catch (Exception e) {
             log.error("Erro ao deletar geofence", e);
             redirectAttributes.addFlashAttribute("error", "Erro ao deletar geofence: " + e.getMessage());
-            return "redirect:/geofence";
+            return "redirect:/area-segura";
         }
     }
 }
