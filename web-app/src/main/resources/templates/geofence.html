@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geofence - PetSafe</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/images/icone_01.ico}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 10px;
+            position: relative;
+        }
+        .geofence-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: navbar}"></div>
+
+    <div class="container py-5" style="margin-top: 80px;">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="fw-bold mb-2">Área Segura (Geofence)</h1>
+                <p class="text-muted mb-0">Defina uma área segura para seus pets. Você será notificado caso eles saiam desta área.</p>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card geofence-card">
+            <div class="card-body p-4">
+                <form th:action="@{/geofence/save}" method="post" id="geofenceForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Nome da Área</label>
+                            <input type="text" class="form-control" name="name" id="name"
+                                   th:value="${geofence != null ? geofence.name : ''}"
+                                   placeholder="Ex: Casa, Parque" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Raio (metros)</label>
+                            <input type="number" class="form-control" name="radius" id="radius"
+                                   th:value="${geofence != null ? geofence.radius_m : 100}"
+                                   min="1" max="1000" required>
+                            <small class="text-muted">Mínimo: 1m | Máximo: 1000m</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Latitude</label>
+                            <input type="number" class="form-control" name="latitude" id="latitude"
+                                   th:value="${geofence != null ? geofence.latitude : ''}"
+                                   step="0.000001" required readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Longitude</label>
+                            <input type="number" class="form-control" name="longitude" id="longitude"
+                                   th:value="${geofence != null ? geofence.longitude : ''}"
+                                   step="0.000001" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Selecione o local no mapa</label>
+                        <div id="map"></div>
+                        <small class="text-muted">Clique no mapa para definir o centro da área segura</small>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-2"></i>
+                            <span th:text="${hasGeofence ? 'Atualizar Geofence' : 'Criar Geofence'}"></span>
+                        </button>
+                        <form th:if="${hasGeofence}" th:action="@{/geofence/delete}" method="post" class="d-inline"
+                              onsubmit="return confirm('Tem certeza que deseja remover o geofence?')">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-2"></i>Remover
+                            </button>
+                        </form>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script th:inline="javascript">
+        let map, marker, circle;
+        const defaultLat = [[${geofence != null ? geofence.latitude : -23.550520}]];
+        const defaultLng = [[${geofence != null ? geofence.longitude : -46.633308}]];
+        const defaultRadius = [[${geofence != null ? geofence.radius_m : 100}]];
+
+        // Inicializa o mapa ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            // Solicita a localização automaticamente após o mapa carregar
+            setTimeout(function() {
+                requestUserLocation();
+            }, 500);
+        });
+
+        function initMap() {
+            // Cria o mapa com OpenStreetMap
+            map = L.map('map').setView([defaultLat, defaultLng], 16);
+
+            // Adiciona o tile layer do OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Adiciona o marcador draggable
+            marker = L.marker([defaultLat, defaultLng], {
+                draggable: true
+            }).addTo(map);
+
+            // Adiciona o círculo (geofence)
+            circle = L.circle([defaultLat, defaultLng], {
+                color: '#4285F4',
+                fillColor: '#4285F4',
+                fillOpacity: 0.2,
+                radius: defaultRadius
+            }).addTo(map);
+
+            // Define os valores iniciais nos inputs
+            document.getElementById('latitude').value = defaultLat;
+            document.getElementById('longitude').value = defaultLng;
+
+            // Atualiza posição quando arrastar o marcador
+            marker.on('dragend', function(e) {
+                const pos = marker.getLatLng();
+                circle.setLatLng(pos);
+                document.getElementById('latitude').value = pos.lat.toFixed(6);
+                document.getElementById('longitude').value = pos.lng.toFixed(6);
+            });
+
+            // Atualiza posição ao clicar no mapa
+            map.on('click', function(e) {
+                marker.setLatLng(e.latlng);
+                circle.setLatLng(e.latlng);
+                document.getElementById('latitude').value = e.latlng.lat.toFixed(6);
+                document.getElementById('longitude').value = e.latlng.lng.toFixed(6);
+            });
+
+            // Atualiza o raio do círculo quando mudar o input
+            const radiusInput = document.getElementById('radius');
+            radiusInput.addEventListener('input', function() {
+                let value = parseInt(this.value);
+                if (value > 1000) {
+                    this.value = 1000;
+                    value = 1000;
+                } else if (value < 1 && this.value !== '') {
+                    this.value = 1;
+                    value = 1;
+                }
+                if (!isNaN(value)) {
+                    circle.setRadius(value);
+                }
+            });
+        }
+
+        function requestUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
+                    map.setView([lat, lng], 16);
+                    marker.setLatLng([lat, lng]);
+                    circle.setLatLng([lat, lng]);
+
+                    document.getElementById('latitude').value = lat.toFixed(6);
+                    document.getElementById('longitude').value = lng.toFixed(6);
+                }, function(error) {
+                    // Se o usuário negar ou houver erro, mantém a localização padrão
+                    console.log('Localização não obtida: ' + error.message);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
