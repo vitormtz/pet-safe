@@ -169,6 +169,7 @@
         let map;
         let polylineLayer;
         let markersLayer = L.layerGroup();
+        let geofenceCircle; // Círculo verde da área segura
         const DEVICE_ID = [[${ device.id }]];
 
         const API_LIMIT = [[${ locationLimit }]];
@@ -178,6 +179,9 @@
 
         const DEFAULT_LAT = -23.5505; // Centro de São Paulo
         const DEFAULT_LNG = -46.6333;
+
+        // Dados do geofence (área segura)
+        const GEOFENCE = [[${geofence}]];
 
         // Armazenar a última localização conhecida para evitar repetição
         let lastKnownPosition = null;
@@ -247,6 +251,25 @@
                 L.control.zoom({ position: 'topright' }).addTo(map);
                 L.control.scale({ imperial: false }).addTo(map);
                 markersLayer.addTo(map);
+
+                // Adiciona o círculo verde da área segura (geofence) se existir
+                if (GEOFENCE && GEOFENCE.latitude && GEOFENCE.longitude && GEOFENCE.radius_m) {
+                    geofenceCircle = L.circle([GEOFENCE.latitude, GEOFENCE.longitude], {
+                        color: '#28a745',
+                        fillColor: '#28a745',
+                        fillOpacity: 0.2,
+                        radius: GEOFENCE.radius_m
+                    }).addTo(map);
+
+                    // Adiciona popup ao círculo
+                    geofenceCircle.bindPopup(`
+                        <div class="text-start">
+                            <p class="fw-bold mb-1">Área Segura</p>
+                            <p class="mb-0">${GEOFENCE.name || 'Sem nome'}</p>
+                            <p class="mb-0">Raio: ${GEOFENCE.radius_m}m</p>
+                        </div>
+                    `);
+                }
             }
 
             const pathCoords = [];
