@@ -104,11 +104,11 @@ CREATE TABLE public.geofences (
     id BIGSERIAL PRIMARY KEY,
     owner_id BIGINT NOT NULL,
     name VARCHAR(100),
-    latitude NUMERIC(9, 6) NOT NULL,
-    longitude NUMERIC(9, 6) NOT NULL,
-    radius_m INTEGER NOT NULL,
     active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    latitude NUMERIC(9, 6),
+    longitude NUMERIC(9, 6),
+    radius_m INTEGER,
     CONSTRAINT fk_geofence_user FOREIGN KEY (owner_id)
         REFERENCES public.users (id)
         ON UPDATE CASCADE
