@@ -144,7 +144,8 @@ public class MainActivity extends AppCompatActivity {
                 // TODO: Navigate to alerts screen
                 return true;
             } else if (itemId == R.id.navigation_profile) {
-                // TODO: Navigate to profile screen
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+                finish();
                 return true;
             }
 
