@@ -74,10 +74,8 @@ public class RegisterController {
             );
 
             // Chamar a API para registrar o usuário
-            log.info("Registrando novo usuário: {}", email);
             RegisterResponse response = authService.registerUser(registerRequest);
 
-            log.info("Usuário registrado com sucesso. ID: {}", response.getId());
             redirectAttributes.addFlashAttribute("success",
                 "Cadastro realizado com sucesso! Faça login para continuar.");
             return "redirect:/login";
