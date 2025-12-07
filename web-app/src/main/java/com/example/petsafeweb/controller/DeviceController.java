@@ -57,9 +57,9 @@ public class DeviceController {
             // VERIFICA SE O USUÁRIO JÁ CADASTROU UM GEOFENCE
             GeofenceResponse geofence = geofenceService.getGeofence(accessToken);
             if (geofence == null) {
-                redirectAttributes.addFlashAttribute("error",
-                    "Você precisa cadastrar uma Área Segura (Geofence) antes de gerenciar dispositivos.");
-                return "redirect:/geofence";
+                redirectAttributes.addFlashAttribute("warning",
+                    "Você primeiro precisa cadastrar uma área segura antes de cadastrar um dispositivo.");
+                return "redirect:/area-segura";
             }
 
             List<DeviceResponse> devices = deviceService.listDevices(accessToken);
@@ -195,9 +195,13 @@ public class DeviceController {
             // 2. Obter Localizações Recentes (usando /devices/{id}/locations/{limit})
             List<LocationResponse> locations = deviceService.listDeviceLocations(id, API_LIMIT, accessToken);
 
+            // 3. Obter Geofence para exibir no mapa
+            GeofenceResponse geofence = geofenceService.getGeofence(accessToken);
+
             // Adiciona dados ao modelo para o Thymeleaf
             model.addAttribute("device", device);
             model.addAttribute("locations", locations);
+            model.addAttribute("geofence", geofence);
             model.addAttribute("locationLimit", API_LIMIT);
             model.addAttribute("mapDisplayLimit", DISPLAY_LIMIT);
 
