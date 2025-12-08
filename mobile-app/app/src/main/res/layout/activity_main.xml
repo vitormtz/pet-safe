@@ -205,20 +205,17 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Em breve - visualize a localização em tempo real"
+                                android:text="Visualize a localização em tempo real"
                                 android:textColor="@color/text_secondary"
                                 android:textSize="14sp"
                                 android:layout_marginTop="4dp" />
                         </LinearLayout>
                     </LinearLayout>
 
-                    <TextView
+                    <org.osmdroid.views.MapView
+                        android:id="@+id/mapView"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:text="Mapa em breve..."
-                        android:gravity="center"
-                        android:background="@color/divider"
-                        android:textColor="@color/text_hint" />
+                        android:layout_height="300dp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
