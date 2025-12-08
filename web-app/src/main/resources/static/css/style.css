@@ -35,6 +35,86 @@ body {
     transition: all 0.3s ease;
 }
 
+/* Badge de Notificações */
+.alert-badge {
+    position: absolute !important;
+    top: 0 !important;
+    right: -5px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    background: #dc3545 !important;
+    color: white !important;
+    font-size: 0.65rem !important;
+    font-weight: bold !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10 !important;
+}
+
+.notification-bell {
+    margin-right: 1.5rem !important;
+    margin-left: 1.5rem !important;
+}
+
+/* Dropdown de Alertas */
+.alert-dropdown {
+    width: 350px !important;
+    max-width: 90vw !important;
+    padding: 0 !important;
+}
+
+#alertsList {
+    max-height: 350px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* Personalizar scrollbar */
+#alertsList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#alertsList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#alertsList::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+#alertsList::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.alert-item {
+    border-bottom: 1px solid #e9ecef !important;
+    padding: 12px !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s !important;
+    background-color: white !important;
+}
+
+.alert-item:hover {
+    background-color: #f8f9fa !important;
+}
+
+.alert-item.unread {
+    background-color: #e7f3ff !important;
+    border-left: 3px solid #0d6efd !important;
+}
+
+.alert-item.unread:hover {
+    background-color: #d4e9ff !important;
+}
+
+.alert-item:last-child {
+    border-bottom: none !important;
+}
+
 .navbar-brand {
     font-weight: 600;
     transition: transform 0.3s ease;
