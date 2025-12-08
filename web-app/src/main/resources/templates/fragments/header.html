@@ -174,12 +174,20 @@
                             const formattedDate = date.toLocaleString('pt-BR');
                             const isUnread = !alert.acknowledged_at;
 
+                            // Define a mensagem baseada na existência de um pet vinculado
+                            let message;
+                            if (alert.pet_name) {
+                                message = `${alert.pet_name} saiu da área segura, clique para ver mais informações`;
+                            } else {
+                                message = 'Dispositivo saiu da área segura, clique para ver mais informações';
+                            }
+
                             return `
-                                <div class="alert-item ${isUnread ? 'unread' : 'read'}" data-alert-id="${alert.id}">
+                                <div class="alert-item ${isUnread ? 'unread' : 'read'}" data-alert-id="${alert.id}" data-device-id="${alert.device_id}">
                                     <div class="d-flex">
                                         <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
                                         <div class="flex-grow-1">
-                                            <p class="mb-1 small"><strong>Pet saiu da área segura</strong></p>
+                                            <p class="mb-1 small"><strong>${message}</strong></p>
                                             <p class="mb-0 text-muted" style="font-size: 0.75rem;">${formattedDate}</p>
                                         </div>
                                     </div>
@@ -191,12 +199,16 @@
                         document.querySelectorAll('.alert-item').forEach(item => {
                             item.addEventListener('click', function() {
                                 const alertId = this.getAttribute('data-alert-id');
+                                const deviceId = this.getAttribute('data-device-id');
                                 const isUnread = this.classList.contains('unread');
 
-                                // Se for não lida, marcar como lida
+                                // Marcar como lida se for não lida
                                 if (isUnread) {
                                     markAlertAsRead(alertId, this);
                                 }
+
+                                // Navegar para a página de detalhes do dispositivo
+                                window.location.href = `/devices/${deviceId}`;
                             });
                         });
                     } else {
