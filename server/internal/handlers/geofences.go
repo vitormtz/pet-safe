@@ -39,9 +39,9 @@ func CreateGeofence(c *gin.Context) {
 	gf := models.Geofence{
 		OwnerID:   ownerID,
 		Name:      in.Name,
-		Latitude:  in.Latitude,
-		Longitude: in.Longitude,
-		RadiusM:   in.RadiusM,
+		Latitude:  &in.Latitude,
+		Longitude: &in.Longitude,
+		RadiusM:   &in.RadiusM,
 		Active:    true,
 	}
 
@@ -111,13 +111,13 @@ func UpdateGeofence(c *gin.Context) {
 		gf.Active = *in.Active
 	}
 	if in.Latitude != 0 {
-		gf.Latitude = in.Latitude
+		gf.Latitude = &in.Latitude
 	}
 	if in.Longitude != 0 {
-		gf.Longitude = in.Longitude
+		gf.Longitude = &in.Longitude
 	}
 	if in.RadiusM != 0 {
-		gf.RadiusM = in.RadiusM
+		gf.RadiusM = &in.RadiusM
 	}
 
 	db.DB.Save(&gf)
