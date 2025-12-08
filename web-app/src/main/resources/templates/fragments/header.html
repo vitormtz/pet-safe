@@ -40,6 +40,9 @@
         .alert-item.unread {
             background-color: #e7f3ff;
         }
+        .alert-item.read {
+            background-color: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -88,7 +91,7 @@
                                 <li class="px-3 py-2 border-bottom">
                                     <div class="d-flex justify-content-between align-items-center">
                                         <strong>Alertas</strong>
-                                        <button class="btn btn-sm btn-link text-primary p-0" id="markAllRead" onclick="markAllAlertsAsRead()">Marcar todas como lidas</button>
+                                        <button class="btn btn-sm btn-link text-primary p-0" id="markAllRead">Marcar todas como lidas</button>
                                     </div>
                                 </li>
                                 <li id="alertsList">
@@ -172,7 +175,7 @@
                             const isUnread = !alert.acknowledged_at;
 
                             return `
-                                <div class="alert-item ${isUnread ? 'unread' : ''}" onclick="markAlertAsRead(${alert.id})">
+                                <div class="alert-item ${isUnread ? 'unread' : 'read'}" data-alert-id="${alert.id}">
                                     <div class="d-flex">
                                         <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
                                         <div class="flex-grow-1">
@@ -183,6 +186,19 @@
                                 </div>
                             `;
                         }).join('');
+
+                        // Adicionar event listeners para cada item de alerta
+                        document.querySelectorAll('.alert-item').forEach(item => {
+                            item.addEventListener('click', function() {
+                                const alertId = this.getAttribute('data-alert-id');
+                                const isUnread = this.classList.contains('unread');
+
+                                // Se for não lida, marcar como lida
+                                if (isUnread) {
+                                    markAlertAsRead(alertId, this);
+                                }
+                            });
+                        });
                     } else {
                         alertsList.innerHTML = `
                             <div class="text-center p-3 text-muted">
@@ -198,32 +214,92 @@
         }
 
         // Função para marcar um alerta como lido
-        async function markAlertAsRead(alertId) {
+        async function markAlertAsRead(alertId, element) {
             try {
+                // Atualizar visualmente imediatamente
+                if (element) {
+                    element.classList.remove('unread');
+                    element.classList.add('read');
+                }
+
+                // Atualizar badge imediatamente (diminuir 1)
+                const badge = document.getElementById('alertCount');
+                const currentCount = parseInt(badge.textContent) || 0;
+                const newCount = Math.max(0, currentCount - 1);
+
+                if (newCount > 0) {
+                    badge.textContent = newCount;
+                    badge.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                }
+
+                // Fazer a requisição para o backend
                 const response = await fetch(`/api/alerts/${alertId}/read`, {
                     method: 'PATCH'
                 });
+
                 if (response.ok) {
+                    // Atualizar a contagem real do servidor
                     fetchUnreadAlertsCount();
-                    fetchAlerts();
+                } else {
+                    // Se falhar, reverter as mudanças visuais
+                    if (element) {
+                        element.classList.remove('read');
+                        element.classList.add('unread');
+                    }
+                    badge.textContent = currentCount;
+                    if (currentCount > 0) {
+                        badge.style.display = 'block';
+                    }
+                    console.error('Erro ao marcar alerta como lido no servidor');
                 }
             } catch (error) {
                 console.error('Erro ao marcar alerta como lido:', error);
+                // Reverter mudanças visuais em caso de erro
+                fetchUnreadAlertsCount();
+                fetchAlerts();
             }
         }
 
         // Função para marcar todos os alertas como lidos
         async function markAllAlertsAsRead() {
             try {
+                // Salvar estado atual para possível rollback
+                const badge = document.getElementById('alertCount');
+                const previousCount = badge.textContent;
+                const previousDisplay = badge.style.display;
+
+                // Atualizar badge imediatamente (zerar)
+                badge.textContent = '0';
+                badge.style.display = 'none';
+
+                // Atualizar todas as notificações para lidas (fundo branco)
+                document.querySelectorAll('.alert-item.unread').forEach(item => {
+                    item.classList.remove('unread');
+                    item.classList.add('read');
+                });
+
+                // Fazer a requisição para o backend
                 const response = await fetch('/api/alerts/read-all', {
                     method: 'PATCH'
                 });
+
                 if (response.ok) {
+                    // Confirmar com o servidor
                     fetchUnreadAlertsCount();
-                    fetchAlerts();
+                } else {
+                    // Se falhar, reverter mudanças visuais
+                    badge.textContent = previousCount;
+                    badge.style.display = previousDisplay;
+                    fetchAlerts(); // Recarregar para restaurar o estado correto
+                    console.error('Erro ao marcar todos os alertas como lidos no servidor');
                 }
             } catch (error) {
                 console.error('Erro ao marcar alertas como lidos:', error);
+                // Recarregar tudo em caso de erro
+                fetchUnreadAlertsCount();
+                fetchAlerts();
             }
         }
 
@@ -232,11 +308,18 @@
             fetchAlerts();
         });
 
+        // Event listener para o botão "Marcar todas como lidas"
+        document.getElementById('markAllRead').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            markAllAlertsAsRead();
+        });
+
         // Buscar contagem de alertas ao carregar a página
         fetchUnreadAlertsCount();
 
-        // Atualizar a contagem de alertas a cada 30 segundos
-        setInterval(fetchUnreadAlertsCount, 30000);
+        // Atualizar a contagem de alertas a cada 5 segundos
+        setInterval(fetchUnreadAlertsCount, 5000);
 
         } // Fim do bloco if (usuário logado)
     </script>
