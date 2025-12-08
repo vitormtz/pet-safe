@@ -29,6 +29,7 @@
     <!-- Status Colors -->
     <color name="success">#5BA3A8</color> <!-- Usando a cor primária -->
     <color name="error">#E57373</color> <!-- Vermelho suave -->
+    <color name="danger">#E57373</color> <!-- Vermelho suave (mesmo que error) -->
     <color name="warning">#FFB74D</color> <!-- Laranja suave -->
     <color name="info">#64B5F6</color> <!-- Azul informativo -->
 
