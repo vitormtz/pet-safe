@@ -106,6 +106,37 @@ func UpdatePassword(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "password updated successfully"})
 }
 
+type RegisterFcmTokenInput struct {
+	FcmToken string `json:"fcm_token" binding:"required"`
+}
+
+func RegisterFcmToken(c *gin.Context) {
+	uidAny, _ := c.Get("user_id")
+	userID := uidAny.(uint64)
+
+	var in RegisterFcmTokenInput
+	if err := c.ShouldBindJSON(&in); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Find user
+	var user models.User
+	if err := db.DB.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	// Update FCM token
+	user.FcmToken = in.FcmToken
+	if err := db.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update FCM token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "FCM token registered successfully"})
+}
+
 // Admin / read by id (example)
 // func GetUserByID(c *gin.Context) {
 // 	idStr := c.Param("id")
