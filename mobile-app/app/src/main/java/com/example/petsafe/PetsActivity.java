@@ -158,9 +158,9 @@ public class PetsActivity extends AppCompatActivity implements PetsAdapter.OnPet
             } else if (itemId == R.id.navigation_pets) {
                 // Already on pets screen
                 return true;
-            } else if (itemId == R.id.navigation_alerts) {
-                // TODO: Navigate to alerts screen
-                Toast.makeText(this, "Tela de alertas em desenvolvimento", Toast.LENGTH_SHORT).show();
+            } else if (itemId == R.id.navigation_devices) {
+                startActivity(new Intent(PetsActivity.this, DevicesActivity.class));
+                finish();
                 return true;
             } else if (itemId == R.id.navigation_profile) {
                 startActivity(new Intent(PetsActivity.this, ProfileActivity.class));

@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnAddDevice.setOnClickListener(v -> {
-            // TODO: Navigate to add device screen
+            startActivity(new Intent(MainActivity.this, DevicesActivity.class));
         });
 
         findViewById(R.id.tvViewAllAlerts).setOnClickListener(v -> {
@@ -141,8 +141,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, PetsActivity.class));
                 finish();
                 return true;
-            } else if (itemId == R.id.navigation_alerts) {
-                // TODO: Navigate to alerts screen
+            } else if (itemId == R.id.navigation_devices) {
+                startActivity(new Intent(MainActivity.this, DevicesActivity.class));
+                finish();
                 return true;
             } else if (itemId == R.id.navigation_profile) {
                 startActivity(new Intent(MainActivity.this, ProfileActivity.class));

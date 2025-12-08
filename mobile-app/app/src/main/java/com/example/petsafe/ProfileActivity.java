@@ -145,9 +145,9 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, PetsActivity.class));
                 finish();
                 return true;
-            } else if (itemId == R.id.navigation_alerts) {
-                // TODO: Navigate to alerts screen
-                Toast.makeText(this, "Tela de alertas em desenvolvimento", Toast.LENGTH_SHORT).show();
+            } else if (itemId == R.id.navigation_devices) {
+                startActivity(new Intent(ProfileActivity.this, DevicesActivity.class));
+                finish();
                 return true;
             } else if (itemId == R.id.navigation_profile) {
                 // Already on profile
