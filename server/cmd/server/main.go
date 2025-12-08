@@ -69,6 +69,12 @@ func main() {
 			secured.PATCH("/geofence", handlers.UpdateGeofence)
 			secured.DELETE("/geofence", handlers.DeleteGeofence)
 
+			// alerts
+			secured.GET("/alerts", handlers.ListAlerts)
+			secured.GET("/alerts/count", handlers.GetUnreadAlertsCount)
+			secured.PATCH("/alerts/:id/read", handlers.MarkAlertAsRead)
+			secured.PATCH("/alerts/read-all", handlers.MarkAllAlertsAsRead)
+
 		}
 	}
 
