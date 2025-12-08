@@ -53,6 +53,12 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.swiperefreshlayout)
 
+    // OpenStreetMap (osmdroid)
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
+    // Google Play Services Location (apenas para obter localização)
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
