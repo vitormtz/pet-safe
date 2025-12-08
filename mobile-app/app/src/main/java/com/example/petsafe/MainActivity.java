@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupListeners() {
         btnAddPet.setOnClickListener(v -> {
-            // TODO: Navigate to add pet screen
+            startActivity(new Intent(MainActivity.this, PetsActivity.class));
         });
 
         btnAddDevice.setOnClickListener(v -> {
@@ -137,8 +137,9 @@ public class MainActivity extends AppCompatActivity {
             if (itemId == R.id.navigation_home) {
                 // Already on home
                 return true;
-            } else if (itemId == R.id.navigation_map) {
-                // TODO: Navigate to map screen
+            } else if (itemId == R.id.navigation_pets) {
+                startActivity(new Intent(MainActivity.this, PetsActivity.class));
+                finish();
                 return true;
             } else if (itemId == R.id.navigation_alerts) {
                 // TODO: Navigate to alerts screen
