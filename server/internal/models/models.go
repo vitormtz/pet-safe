@@ -10,6 +10,7 @@ type User struct {
 	PasswordHash string    `gorm:"size:255;not null" json:"-"`
 	FullName     string    `gorm:"size:120" json:"full_name"`
 	Phone        string    `gorm:"size:20" json:"phone"`
+	FcmToken     string    `gorm:"size:255" json:"-"`
 	CreatedAt    time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt    time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 	Pets         []Pet     `gorm:"foreignKey:OwnerID" json:"pets,omitempty"`
