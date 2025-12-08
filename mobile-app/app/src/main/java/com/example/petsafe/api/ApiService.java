@@ -1,19 +1,27 @@
 package com.example.petsafe.api;
 
+import com.example.petsafe.models.ApiResponse;
 import com.example.petsafe.models.ChangePasswordRequest;
+import com.example.petsafe.models.Device;
 import com.example.petsafe.models.LoginRequest;
 import com.example.petsafe.models.LoginResponse;
+import com.example.petsafe.models.Pet;
+import com.example.petsafe.models.PetRequest;
 import com.example.petsafe.models.RegisterRequest;
 import com.example.petsafe.models.UpdateProfileRequest;
 import com.example.petsafe.models.User;
 import com.example.petsafe.models.UserResponse;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 public interface ApiService {
 
@@ -63,6 +71,75 @@ public interface ApiService {
     Call<Void> changePassword(
             @Header("Authorization") String authorization,
             @Body ChangePasswordRequest changePasswordRequest
+    );
+
+    // ==================== PETS ENDPOINTS ====================
+
+    /**
+     * Endpoint para listar todos os pets do usuário
+     * GET /api/v1/pets
+     */
+    @GET("pets")
+    Call<ApiResponse<List<Pet>>> listPets(@Header("Authorization") String authorization);
+
+    /**
+     * Endpoint para obter detalhes de um pet específico
+     * GET /api/v1/pets/:id
+     */
+    @GET("pets/{id}")
+    Call<ApiResponse<Pet>> getPetDetails(
+            @Header("Authorization") String authorization,
+            @Path("id") Long petId
+    );
+
+    /**
+     * Endpoint para criar um novo pet
+     * POST /api/v1/pets
+     */
+    @POST("pets")
+    Call<ApiResponse<Pet>> createPet(
+            @Header("Authorization") String authorization,
+            @Body PetRequest petRequest
+    );
+
+    /**
+     * Endpoint para atualizar um pet existente
+     * PATCH /api/v1/pets/:id
+     */
+    @PATCH("pets/{id}")
+    Call<ApiResponse<Pet>> updatePet(
+            @Header("Authorization") String authorization,
+            @Path("id") Long petId,
+            @Body PetRequest petRequest
+    );
+
+    /**
+     * Endpoint para deletar um pet
+     * DELETE /api/v1/pets/:id
+     */
+    @DELETE("pets/{id}")
+    Call<ApiResponse<Boolean>> deletePet(
+            @Header("Authorization") String authorization,
+            @Path("id") Long petId
+    );
+
+    // ==================== DEVICES ENDPOINTS ====================
+
+    /**
+     * Endpoint para listar todos os dispositivos do usuário
+     * GET /api/v1/devices
+     */
+    @GET("devices")
+    Call<ApiResponse<List<Device>>> listDevices(@Header("Authorization") String authorization);
+
+    /**
+     * Endpoint para obter status de um dispositivo específico
+     * GET /api/v1/devices/:id/status
+     */
+    @GET("devices/{id}/status")
+    Call<ApiResponse<Device>> getDeviceStatus(
+            @Header("Authorization") String authorization,
+            @Path("id") Long deviceId
     );
 
     /**
