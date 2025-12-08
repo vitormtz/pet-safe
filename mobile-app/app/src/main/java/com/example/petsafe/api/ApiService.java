@@ -4,6 +4,7 @@ import com.example.petsafe.models.ApiResponse;
 import com.example.petsafe.models.ChangePasswordRequest;
 import com.example.petsafe.models.Device;
 import com.example.petsafe.models.DeviceRequest;
+import com.example.petsafe.models.FcmTokenRequest;
 import com.example.petsafe.models.Geofence;
 import com.example.petsafe.models.GeofenceRequest;
 import com.example.petsafe.models.Location;
@@ -75,6 +76,16 @@ public interface ApiService {
     Call<Void> changePassword(
             @Header("Authorization") String authorization,
             @Body ChangePasswordRequest changePasswordRequest
+    );
+
+    /**
+     * Endpoint para registrar token FCM do dispositivo
+     * POST /api/v1/me/fcm-token
+     */
+    @POST("me/fcm-token")
+    Call<ApiResponse<Void>> registerFcmToken(
+            @Header("Authorization") String authorization,
+            @Body FcmTokenRequest fcmTokenRequest
     );
 
     // ==================== PETS ENDPOINTS ====================
