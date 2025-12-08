@@ -141,11 +141,16 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(new Intent(ProfileActivity.this, MainActivity.class));
                 finish();
                 return true;
-            } else if (itemId == R.id.navigation_map) {
+            } else if (itemId == R.id.navigation_pets) {
+                startActivity(new Intent(ProfileActivity.this, PetsActivity.class));
+                finish();
                 return true;
             } else if (itemId == R.id.navigation_alerts) {
+                // TODO: Navigate to alerts screen
+                Toast.makeText(this, "Tela de alertas em desenvolvimento", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.navigation_profile) {
+                // Already on profile
                 return true;
             }
 
