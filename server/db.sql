@@ -144,7 +144,7 @@ CREATE TABLE public.alerts (
     alert_type VARCHAR(80) NOT NULL,
     alert_timestamp TIMESTAMPTZ NOT NULL,
     acknowledged_by BIGINT,
-    acknowledged_at TIMESTAMPTZ NOT NULL,
+    acknowledged_at TIMESTAMPTZ,
     CONSTRAINT fk_alerts_device FOREIGN KEY (device_id)
         REFERENCES public.devices (id)
         ON UPDATE CASCADE
