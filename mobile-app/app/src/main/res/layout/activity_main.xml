@@ -34,7 +34,7 @@
                     android:id="@+id/tvUserName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Usuário"
+                    android:text="Início"
                     android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -55,12 +55,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:paddingBottom="16dp">
+            android:padding="16dp">
 
-            <!-- Pets Summary Card -->
+            <!-- Welcome Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cvPetsSummary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
@@ -77,182 +75,23 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/my_pets"
+                        android:text="Bem-vindo ao PetSafe!"
                         android:textColor="@color/text_primary"
-                        android:textSize="18sp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="16dp" />
+                        android:layout_marginBottom="8dp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <TextView
-                                android:id="@+id/tvTotalPets"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textColor="@color/primary"
-                                android:textSize="32sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/total_pets"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="14sp"
-                                android:layout_marginTop="4dp" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="60dp"
-                            android:background="@color/divider" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center">
-
-                            <TextView
-                                android:id="@+id/tvActivePets"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="0"
-                                android:textColor="@color/success"
-                                android:textSize="32sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/active"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="14sp"
-                                android:layout_marginTop="4dp" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnAddPet"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/add_new_pet"
-                        android:textSize="14sp"
-                        app:cornerRadius="12dp"
-                        app:strokeColor="@color/primary"
-                        app:strokeWidth="2dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:textColor="@color/primary" />
+                        android:text="Configure a área segura do seu pet e acompanhe sua localização em tempo real."
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Recent Alerts -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/recent_alerts"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvViewAllAlerts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/view_all"
-                    android:textColor="@color/primary"
-                    android:textSize="14sp"
-                    android:clickable="true"
-                    android:focusable="true" />
-            </LinearLayout>
-
+            <!-- Safe Area Card -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cvAlertsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/card_background"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <!-- Empty State -->
-                    <LinearLayout
-                        android:id="@+id/llEmptyAlerts"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="32dp"
-                        android:visibility="gone">
-
-                        <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@drawable/ic_info_outline"
-                            android:tint="@color/text_hint"
-                            android:alpha="0.5"
-                            android:contentDescription="@string/no_alerts" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/no_alerts"
-                            android:textColor="@color/text_hint"
-                            android:textSize="14sp"
-                            android:layout_marginTop="12dp" />
-                    </LinearLayout>
-
-                    <!-- Alerts List -->
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvRecentAlerts"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="12dp"
-                        android:nestedScrollingEnabled="false"
-                        tools:itemCount="3"
-                        tools:listitem="@android:layout/simple_list_item_1" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Device Status -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/device_status"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvDeviceStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="16dp"
@@ -264,57 +103,122 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
-                    <!-- Empty State -->
                     <LinearLayout
-                        android:id="@+id/llEmptyDevices"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="24dp"
-                        android:visibility="gone">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
 
                         <ImageView
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:src="@android:drawable/stat_sys_data_bluetooth"
-                            android:tint="@color/text_hint"
-                            android:alpha="0.5"
-                            android:contentDescription="@string/no_devices" />
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_location_on"
+                            android:tint="@color/primary"
+                            android:contentDescription="Área Segura" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="@string/no_devices"
-                            android:textColor="@color/text_hint"
-                            android:textSize="14sp"
-                            android:layout_marginTop="12dp" />
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Área Segura"
+                                android:textColor="@color/text_primary"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Defina uma zona segura para seu pet"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="14sp"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Devices List -->
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/rvDevices"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        tools:itemCount="2"
-                        tools:listitem="@android:layout/simple_list_item_1" />
-
-                    <!-- Add Device Button -->
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnAddDevice"
+                        android:id="@+id/btnConfigureGeofence"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/add_new_device"
+                        android:text="Configurar Área Segura"
                         android:textSize="14sp"
                         app:cornerRadius="12dp"
-                        app:strokeColor="@color/primary"
-                        app:strokeWidth="2dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:textColor="@color/primary" />
+                        app:icon="@drawable/ic_location_on"
+                        app:iconGravity="textStart"
+                        android:backgroundTint="@color/primary"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Pet Location Card (Placeholder for future implementation) -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/card_background"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_pets"
+                            android:tint="@color/primary"
+                            android:contentDescription="Localização do Pet" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Localização do Pet"
+                                android:textColor="@color/text_primary"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Em breve - visualize a localização em tempo real"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="14sp"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:text="Mapa em breve..."
+                        android:gravity="center"
+                        android:background="@color/divider"
+                        android:textColor="@color/text_hint" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
