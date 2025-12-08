@@ -199,3 +199,7 @@ Desktop.ini
 .DS_Store
 .AppleDouble
 .LSOverride
+
+
+*.firebase-service-account.json
+*.google-services.json
