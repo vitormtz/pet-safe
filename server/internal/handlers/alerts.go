@@ -73,10 +73,23 @@ func MarkAllAlertsAsRead(c *gin.Context) {
 
 	now := time.Now()
 
-	// Atualiza todos os alertas não lidos do usuário
+	// Primeiro, busca os IDs dos alertas não lidos do usuário
+	var alertIDs []uint64
 	db.DB.Model(&models.Alert{}).
+		Select("alerts.id").
 		Joins("JOIN devices ON devices.id = alerts.device_id").
 		Where("devices.owner_id = ? AND alerts.acknowledged_at IS NULL", userID).
+		Pluck("alerts.id", &alertIDs)
+
+	// Se não houver alertas, retorna sucesso
+	if len(alertIDs) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No unread alerts"})
+		return
+	}
+
+	// Atualiza os alertas usando os IDs encontrados
+	db.DB.Model(&models.Alert{}).
+		Where("id IN ?", alertIDs).
 		Updates(map[string]interface{}{
 			"acknowledged_by": userID,
 			"acknowledged_at": now,
