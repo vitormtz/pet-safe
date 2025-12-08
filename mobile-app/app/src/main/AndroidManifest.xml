@@ -53,6 +53,14 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
             android:parentActivityName=".MainActivity" />
+
+        <!-- Pets Activity -->
+        <activity
+            android:name=".PetsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>
