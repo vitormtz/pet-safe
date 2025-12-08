@@ -6,9 +6,9 @@
         android:title="@string/nav_home" />
 
     <item
-        android:id="@+id/navigation_map"
-        android:icon="@android:drawable/ic_dialog_map"
-        android:title="@string/nav_map" />
+        android:id="@+id/navigation_pets"
+        android:icon="@drawable/ic_pets"
+        android:title="@string/nav_pets" />
 
     <item
         android:id="@+id/navigation_alerts"

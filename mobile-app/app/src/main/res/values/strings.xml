@@ -63,6 +63,7 @@
 
     <!-- Bottom Navigation -->
     <string name="nav_home">Início</string>
+    <string name="nav_pets">Pets</string>
     <string name="nav_map">Mapa</string>
     <string name="nav_alerts">Alertas</string>
     <string name="nav_profile">Perfil</string>
