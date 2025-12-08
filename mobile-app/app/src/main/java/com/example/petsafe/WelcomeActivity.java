@@ -17,6 +17,7 @@ import com.example.petsafe.api.ApiClient;
 import com.example.petsafe.api.ApiService;
 import com.example.petsafe.models.LoginRequest;
 import com.example.petsafe.models.LoginResponse;
+import com.example.petsafe.utils.FcmTokenManager;
 import com.example.petsafe.utils.SessionManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -169,6 +170,9 @@ public class WelcomeActivity extends AppCompatActivity {
                             loginResponse.getTokenType(),
                             loginResponse.getUser()
                     );
+
+                    // Request notification permission and register FCM token
+                    FcmTokenManager.requestNotificationPermissionAndRegisterToken(WelcomeActivity.this);
 
                     // Navegar para MainActivity
                     navigateToMain();
