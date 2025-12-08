@@ -6,6 +6,7 @@ import com.example.petsafe.models.Device;
 import com.example.petsafe.models.DeviceRequest;
 import com.example.petsafe.models.Geofence;
 import com.example.petsafe.models.GeofenceRequest;
+import com.example.petsafe.models.Location;
 import com.example.petsafe.models.LoginRequest;
 import com.example.petsafe.models.LoginResponse;
 import com.example.petsafe.models.Pet;
@@ -184,6 +185,17 @@ public interface ApiService {
     Call<ApiResponse<Boolean>> deleteDevice(
             @Header("Authorization") String authorization,
             @Path("id") Long deviceId
+    );
+
+    /**
+     * Endpoint para obter histórico de localizações de um dispositivo
+     * GET /api/v1/devices/:id/locations/:limit
+     */
+    @GET("devices/{id}/locations/{limit}")
+    Call<ApiResponse<List<Location>>> getDeviceLocations(
+            @Header("Authorization") String authorization,
+            @Path("id") Long deviceId,
+            @Path("limit") int limit
     );
 
     // ==================== GEOFENCE ENDPOINTS ====================
