@@ -51,6 +51,7 @@ dependencies {
 
     // Gson para serialização JSON
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.swiperefreshlayout)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
