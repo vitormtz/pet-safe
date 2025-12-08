@@ -3,6 +3,7 @@ package com.example.petsafe.api;
 import com.example.petsafe.models.ApiResponse;
 import com.example.petsafe.models.ChangePasswordRequest;
 import com.example.petsafe.models.Device;
+import com.example.petsafe.models.DeviceRequest;
 import com.example.petsafe.models.LoginRequest;
 import com.example.petsafe.models.LoginResponse;
 import com.example.petsafe.models.Pet;
@@ -138,6 +139,47 @@ public interface ApiService {
      */
     @GET("devices/{id}/status")
     Call<ApiResponse<Device>> getDeviceStatus(
+            @Header("Authorization") String authorization,
+            @Path("id") Long deviceId
+    );
+
+    /**
+     * Endpoint para obter detalhes de um dispositivo específico
+     * GET /api/v1/devices/:id
+     */
+    @GET("devices/{id}")
+    Call<ApiResponse<Device>> getDeviceDetails(
+            @Header("Authorization") String authorization,
+            @Path("id") Long deviceId
+    );
+
+    /**
+     * Endpoint para criar um novo dispositivo
+     * POST /api/v1/devices
+     */
+    @POST("devices")
+    Call<ApiResponse<Device>> createDevice(
+            @Header("Authorization") String authorization,
+            @Body DeviceRequest deviceRequest
+    );
+
+    /**
+     * Endpoint para atualizar um dispositivo existente
+     * PATCH /api/v1/devices/:id
+     */
+    @PATCH("devices/{id}")
+    Call<ApiResponse<Device>> updateDevice(
+            @Header("Authorization") String authorization,
+            @Path("id") Long deviceId,
+            @Body DeviceRequest deviceRequest
+    );
+
+    /**
+     * Endpoint para deletar um dispositivo
+     * DELETE /api/v1/devices/:id
+     */
+    @DELETE("devices/{id}")
+    Call<ApiResponse<Boolean>> deleteDevice(
             @Header("Authorization") String authorization,
             @Path("id") Long deviceId
     );
