@@ -4,6 +4,8 @@ import com.example.petsafe.models.ApiResponse;
 import com.example.petsafe.models.ChangePasswordRequest;
 import com.example.petsafe.models.Device;
 import com.example.petsafe.models.DeviceRequest;
+import com.example.petsafe.models.Geofence;
+import com.example.petsafe.models.GeofenceRequest;
 import com.example.petsafe.models.LoginRequest;
 import com.example.petsafe.models.LoginResponse;
 import com.example.petsafe.models.Pet;
@@ -183,6 +185,42 @@ public interface ApiService {
             @Header("Authorization") String authorization,
             @Path("id") Long deviceId
     );
+
+    // ==================== GEOFENCE ENDPOINTS ====================
+
+    /**
+     * Endpoint para obter o geofence do usuário
+     * GET /api/v1/geofence
+     */
+    @GET("geofence")
+    Call<ApiResponse<Geofence>> getGeofence(@Header("Authorization") String authorization);
+
+    /**
+     * Endpoint para criar um geofence
+     * POST /api/v1/geofence
+     */
+    @POST("geofence")
+    Call<ApiResponse<Geofence>> createGeofence(
+            @Header("Authorization") String authorization,
+            @Body GeofenceRequest geofenceRequest
+    );
+
+    /**
+     * Endpoint para atualizar o geofence
+     * PATCH /api/v1/geofence
+     */
+    @PATCH("geofence")
+    Call<ApiResponse<Geofence>> updateGeofence(
+            @Header("Authorization") String authorization,
+            @Body GeofenceRequest geofenceRequest
+    );
+
+    /**
+     * Endpoint para deletar o geofence
+     * DELETE /api/v1/geofence
+     */
+    @DELETE("geofence")
+    Call<ApiResponse<Boolean>> deleteGeofence(@Header("Authorization") String authorization);
 
     /**
      * Classe auxiliar para request de refresh token
