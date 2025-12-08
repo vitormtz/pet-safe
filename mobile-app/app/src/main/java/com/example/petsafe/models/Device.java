@@ -22,6 +22,9 @@ public class Device {
     @SerializedName("last_longitude")
     private Double lastLongitude;
 
+    @SerializedName("pet_id")
+    private Long petId;
+
     @SerializedName("user_id")
     private Long userId;
 
@@ -99,6 +102,14 @@ public class Device {
 
     public void setLastLongitude(Double lastLongitude) {
         this.lastLongitude = lastLongitude;
+    }
+
+    public Long getPetId() {
+        return petId;
+    }
+
+    public void setPetId(Long petId) {
+        this.petId = petId;
     }
 
     public Long getUserId() {
