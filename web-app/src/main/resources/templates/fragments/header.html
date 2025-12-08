@@ -12,6 +12,34 @@
             margin-right: 1.5rem !important;
             margin-left: 1.5rem !important;
         }
+        .alert-badge {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            padding: 2px 6px;
+            border-radius: 50%;
+            background: #dc3545;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        .alert-dropdown {
+            width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .alert-item {
+            border-bottom: 1px solid #e9ecef;
+            padding: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .alert-item:hover {
+            background-color: #f8f9fa;
+        }
+        .alert-item.unread {
+            background-color: #e7f3ff;
+        }
     </style>
 </head>
 <body>
@@ -51,10 +79,25 @@
                         <li class="nav-item d-flex align-items-center">
                             <span class="vr mx-2" style="opacity: 0.3;"></span>
                         </li>
-                        <li class="nav-item notification-bell d-flex align-items-center">
-                            <a class="nav-link position-relative" href="/notifications">
+                        <li class="nav-item notification-bell dropdown d-flex align-items-center">
+                            <a class="nav-link position-relative" href="#" id="alertsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-bell-fill"></i>
+                                <span class="alert-badge" id="alertCount" style="display: none;">0</span>
                             </a>
+                            <ul class="dropdown-menu dropdown-menu-end alert-dropdown" aria-labelledby="alertsDropdown">
+                                <li class="px-3 py-2 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <strong>Alertas</strong>
+                                        <button class="btn btn-sm btn-link text-primary p-0" id="markAllRead" onclick="markAllAlertsAsRead()">Marcar todas como lidas</button>
+                                    </div>
+                                </li>
+                                <li id="alertsList">
+                                    <div class="text-center p-3 text-muted">
+                                        <i class="bi bi-bell-slash"></i>
+                                        <p class="mb-0 small">Nenhum alerta</p>
+                                    </div>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item dropdown d-flex align-items-center">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -84,5 +127,118 @@
             </div>
         </div>
     </nav>
+
+    <script th:fragment="alertsScript">
+        // Verifica se o usuário está logado (se o elemento de alertas existe)
+        const alertBadge = document.getElementById('alertCount');
+        if (!alertBadge) {
+            // Usuário não está logado, não executa o script
+        } else {
+
+        // Função para buscar alertas não lidos
+        async function fetchUnreadAlertsCount() {
+            try {
+                const response = await fetch('/api/alerts/count');
+                if (response.ok) {
+                    const data = await response.json();
+                    const count = data.count;
+                    const badge = document.getElementById('alertCount');
+
+                    if (count > 0) {
+                        badge.textContent = count;
+                        badge.style.display = 'block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao buscar alertas:', error);
+            }
+        }
+
+        // Função para buscar e exibir alertas
+        async function fetchAlerts() {
+            try {
+                const response = await fetch('/api/alerts');
+                if (response.ok) {
+                    const data = await response.json();
+                    const alerts = data.data;
+                    const alertsList = document.getElementById('alertsList');
+
+                    if (alerts && alerts.length > 0) {
+                        alertsList.innerHTML = alerts.map(alert => {
+                            const date = new Date(alert.alert_timestamp);
+                            const formattedDate = date.toLocaleString('pt-BR');
+                            const isUnread = !alert.acknowledged_at;
+
+                            return `
+                                <div class="alert-item ${isUnread ? 'unread' : ''}" onclick="markAlertAsRead(${alert.id})">
+                                    <div class="d-flex">
+                                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                                        <div class="flex-grow-1">
+                                            <p class="mb-1 small"><strong>Pet saiu da área segura</strong></p>
+                                            <p class="mb-0 text-muted" style="font-size: 0.75rem;">${formattedDate}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        alertsList.innerHTML = `
+                            <div class="text-center p-3 text-muted">
+                                <i class="bi bi-bell-slash"></i>
+                                <p class="mb-0 small">Nenhum alerta</p>
+                            </div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao buscar alertas:', error);
+            }
+        }
+
+        // Função para marcar um alerta como lido
+        async function markAlertAsRead(alertId) {
+            try {
+                const response = await fetch(`/api/alerts/${alertId}/read`, {
+                    method: 'PATCH'
+                });
+                if (response.ok) {
+                    fetchUnreadAlertsCount();
+                    fetchAlerts();
+                }
+            } catch (error) {
+                console.error('Erro ao marcar alerta como lido:', error);
+            }
+        }
+
+        // Função para marcar todos os alertas como lidos
+        async function markAllAlertsAsRead() {
+            try {
+                const response = await fetch('/api/alerts/read-all', {
+                    method: 'PATCH'
+                });
+                if (response.ok) {
+                    fetchUnreadAlertsCount();
+                    fetchAlerts();
+                }
+            } catch (error) {
+                console.error('Erro ao marcar alertas como lidos:', error);
+            }
+        }
+
+        // Buscar alertas quando o dropdown for aberto
+        document.getElementById('alertsDropdown').addEventListener('click', function() {
+            fetchAlerts();
+        });
+
+        // Buscar contagem de alertas ao carregar a página
+        fetchUnreadAlertsCount();
+
+        // Atualizar a contagem de alertas a cada 30 segundos
+        setInterval(fetchUnreadAlertsCount, 30000);
+
+        } // Fim do bloco if (usuário logado)
+    </script>
 </body>
 </html>
