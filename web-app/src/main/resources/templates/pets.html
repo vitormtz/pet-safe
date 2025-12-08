@@ -113,7 +113,7 @@
                             <div class="info-item" th:if="${pet.microchipId != null and !pet.microchipId.isEmpty()}">
                                 <i class="bi bi-cpu-fill text-info"></i>
                                 <span>
-                                    <strong>Microchip:</strong>
+                                    <strong>Dispositivo ID:</strong>
                                     <span th:text="${pet.microchipId}">ID</span>
                                 </span>
                             </div>
@@ -173,10 +173,14 @@
                             <input type="text" class="form-control" id="breed" name="breed" th:field="*{breed}">
                         </div>
 
-                        <!-- Microchip ID -->
+                        <!-- Device ID -->
                         <div class="mb-3">
-                            <label for="microchipId" class="form-label">ID do Microchip</label>
-                            <input type="text" class="form-control" id="microchipId" name="microchipId" th:field="*{microchipId}">
+                            <label for="microchipId" class="form-label">ID do dispositivo *</label>
+                            <select class="form-select" id="microchipId" name="microchipId" th:field="*{microchipId}" required style="pointer-events: auto;">
+                                <option value="">Selecione um dispositivo...</option>
+                                <option th:each="device : ${devices}" th:value="${device.id}" th:text="${device.serialNumber + ' (' + device.model + ')'}">Dispositivo</option>
+                            </select>
+                            <div class="form-text" id="deviceHelpText">Selecione o dispositivo que irá ser vinculado a este pet</div>
                         </div>
 
                         <!-- Data de Nascimento -->
@@ -237,6 +241,10 @@
             document.getElementById('species').value = '';
             document.getElementById('breed').value = '';
             document.getElementById('microchipId').value = '';
+            document.getElementById('microchipId').disabled = false;
+            document.getElementById('microchipId').style.pointerEvents = 'auto';
+            document.getElementById('microchipId').style.backgroundColor = '';
+            document.getElementById('deviceHelpText').innerText = 'Selecione o dispositivo que irá ser vinculado a este pet';
             document.getElementById('dob').value = '';
             document.getElementById('submitBtn').innerText = 'Salvar';
         }
@@ -267,6 +275,10 @@
                     document.getElementById('species').value = species;
                     document.getElementById('breed').value = breed;
                     document.getElementById('microchipId').value = microchipId;
+                    document.getElementById('microchipId').disabled = true;
+                    document.getElementById('microchipId').style.pointerEvents = 'none';
+                    document.getElementById('microchipId').style.backgroundColor = '#e9ecef';
+                    document.getElementById('deviceHelpText').innerText = 'O dispositivo não pode ser alterado após o cadastro';
                     document.getElementById('dob').value = dob;
                     document.getElementById('submitBtn').innerText = 'Atualizar';
 

@@ -1,7 +1,9 @@
 package com.example.petsafeweb.controller;
 
+import com.example.petsafeweb.dto.DeviceResponse;
 import com.example.petsafeweb.dto.PetRequest;
 import com.example.petsafeweb.dto.PetResponse;
+import com.example.petsafeweb.service.DeviceService;
 import com.example.petsafeweb.service.PetService;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,11 @@ import java.util.List;
 public class PetController {
 
     private final PetService petService;
+    private final DeviceService deviceService;
 
-    public PetController(PetService petService) {
+    public PetController(PetService petService, DeviceService deviceService) {
         this.petService = petService;
+        this.deviceService = deviceService;
     }
 
     /**
@@ -48,8 +52,10 @@ public class PetController {
             }
 
             List<PetResponse> pets = petService.listPets(accessToken);
+            List<DeviceResponse> devices = deviceService.listDevices(accessToken);
 
             model.addAttribute("pets", pets != null ? pets : List.of());
+            model.addAttribute("devices", devices != null ? devices : List.of());
             model.addAttribute("petRequest", new PetRequest());
 
             return "pets";
@@ -65,6 +71,7 @@ public class PetController {
 
             model.addAttribute("error", e.getMessage());
             model.addAttribute("pets", List.of());
+            model.addAttribute("devices", List.of());
             model.addAttribute("petRequest", new PetRequest());
             return "pets";
         }
