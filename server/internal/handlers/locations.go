@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"log"
 	"math"
 	"net/http"
 	"time"
 
 	"petsafe/internal/db"
+	"petsafe/internal/fcm"
 	"petsafe/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -88,11 +90,46 @@ func PostLocation(c *gin.Context) {
 						AlertType:      "geofence_exit",
 						AlertTimestamp: now,
 					}
-					db.DB.Create(&alert)
+					if err := db.DB.Create(&alert).Error; err == nil {
+						// Send push notification to user
+						go sendGeofenceExitNotification(device.OwnerID, device.ID, device.PetID)
+					}
 				}
 			}
 		}
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"data": loc})
+}
+
+// sendGeofenceExitNotification sends a push notification when a pet exits the geofence
+func sendGeofenceExitNotification(ownerID, deviceID uint64, petID *uint64) {
+	// Get user to retrieve FCM token
+	var user models.User
+	if err := db.DB.First(&user, ownerID).Error; err != nil {
+		log.Printf("Failed to get user %d: %v", ownerID, err)
+		return
+	}
+
+	// Check if user has FCM token
+	if user.FcmToken == "" {
+		log.Printf("User %d has no FCM token registered", ownerID)
+		return
+	}
+
+	// Get pet name if petID is provided
+	petName := "Seu pet"
+	if petID != nil {
+		var pet models.Pet
+		if err := db.DB.First(&pet, *petID).Error; err == nil {
+			petName = pet.Name
+		}
+	}
+
+	// Send notification
+	if err := fcm.SendGeofenceExitNotification(user.FcmToken, petName, deviceID); err != nil {
+		log.Printf("Failed to send notification to user %d: %v", ownerID, err)
+	} else {
+		log.Printf("Notification sent successfully to user %d for pet %s", ownerID, petName)
+	}
 }
