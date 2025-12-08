@@ -63,9 +63,9 @@ type Geofence struct {
 	ID        uint64    `gorm:"primaryKey" json:"id"`
 	OwnerID   uint64    `gorm:"not null;index" json:"owner_id"`
 	Name      string    `gorm:"size:100" json:"name"`
-	Latitude  float64   `gorm:"type:numeric(9,6);not null" json:"latitude"`
-	Longitude float64   `gorm:"type:numeric(9,6);not null" json:"longitude"`
-	RadiusM   int       `gorm:"not null" json:"radius_m"`
+	Latitude  *float64  `gorm:"type:numeric(9,6)" json:"latitude"`
+	Longitude *float64  `gorm:"type:numeric(9,6)" json:"longitude"`
+	RadiusM   *int      `json:"radius_m"`
 	Active    bool      `gorm:"default:true" json:"active"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 }
