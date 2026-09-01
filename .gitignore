@@ -201,5 +201,8 @@ Desktop.ini
 .LSOverride
 
 
-*.firebase-service-account.json
-*.google-services.json
+# Credenciais do Firebase (chave de service account = acesso administrativo)
+firebase-service-account.json
+google-services.json
+**/firebase-service-account.json
+**/google-services.json
